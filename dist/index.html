@@ -33,6 +33,61 @@
     .success{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:35px}.success-house{width:150px;height:115px;background:#fff0d7;border-radius:50% 50% 28% 28%;position:relative;margin-bottom:30px;box-shadow:inset 0 -18px #d0d6a9}.success-house:before{content:"";position:absolute;left:43px;top:14px;width:68px;height:70px;background:#fffdf6;border-radius:28px 28px 9px 9px;box-shadow:inset 0 18px #e9834e}.success-house:after{content:"♥";position:absolute;color:var(--orange);font-size:25px;left:65px;top:51px;animation:fly 1.4s ease-in-out infinite}@keyframes fly{0%{transform:translateY(35px) scale(.6);opacity:0}45%{opacity:1}100%{transform:translateY(-20px) scale(1);opacity:0}}.success h1{font-size:28px;margin-bottom:10px}.success .btn{margin-top:24px}
     .onboard{background:linear-gradient(165deg,#fff8ec,#ffe8cf)}.onboard .scroll{padding-top:55px}.logo{display:flex;align-items:center;gap:10px;font-family:Georgia,serif;font-size:21px;font-weight:800}.mark{width:35px;height:35px;border-radius:11px;background:var(--orange);color:white;display:grid;place-items:center}.onboard-art{height:180px;margin:20px 0 10px;position:relative}.onboard-art .gift{right:126px;bottom:45px;transform:scale(1.25)}.spark{position:absolute;color:#dfaa36;font-size:23px;animation:pop 1.7s infinite}.spark.s1{top:30px;left:70px}.spark.s2{top:55px;right:58px;animation-delay:-.6s}.spark.s3{bottom:30px;right:91px;animation-delay:-1s}.avatar-picks{display:flex;gap:12px}.avatar-pick{border:3px solid transparent;border-radius:50%;padding:2px;background:none}.avatar-pick.selected{border-color:var(--orange)}.gen-island{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.gen-island .success-house{animation:pulse 1.4s infinite}.hide{display:none!important}
     @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+  
+    /* GiftLoop home refresh — relationship scrapbook + boutique surprise */
+    [data-screen="home"]{background:radial-gradient(circle at 84% 8%,rgba(247,207,105,.2),transparent 25%),linear-gradient(180deg,#fffaf1 0%,#fff7eb 100%)}
+    [data-screen="home"] .scroll{padding:17px 18px 108px}
+    [data-screen="home"] .topline{margin:0 2px 16px;align-items:flex-start}
+    [data-screen="home"] .topline .tiny{display:inline-flex;align-items:center;gap:5px;color:#a55a36;font-weight:800;background:#ffe9d5;padding:5px 9px;border-radius:99px;margin-bottom:7px}
+    [data-screen="home"] .topline .tiny:before{content:"✦";color:#d79a24}
+    [data-screen="home"] .topline .title{font-family:Georgia,"Songti SC",serif;font-size:23px;letter-spacing:-.02em}
+    [data-screen="home"] .topline>.avatar{box-shadow:0 7px 0 #efd8c0,0 14px 22px rgba(117,69,36,.12);transition:.2s}
+    [data-screen="home"] .topline>.avatar:active{transform:translateY(3px);box-shadow:0 4px 0 #efd8c0}
+    .home-hero{min-height:278px;padding:21px 19px 19px;border-radius:30px;background:linear-gradient(145deg,#ffdec0 0%,#ffd0a3 58%,#ffc18f 100%);border:1px solid rgba(180,77,35,.14);box-shadow:0 17px 0 #f4d8bb,0 28px 50px rgba(154,75,37,.16);overflow:visible;isolation:isolate}
+    .home-hero:before{content:"";position:absolute;inset:8px;border:1px dashed rgba(172,78,38,.16);border-radius:24px;z-index:-1}
+    .home-hero:after{width:118px;height:118px;right:-16px;top:-24px;background:radial-gradient(circle,rgba(255,255,255,.54),rgba(255,255,255,0) 67%)}
+    .home-hero .eyebrow{font-size:10px;letter-spacing:.15em;margin-top:23px;color:#af4b25}
+    .home-hero .display{font-size:27px;line-height:1.13;max-width:220px;margin-top:5px}
+    .home-hero .hero-note{font-size:12px;line-height:1.5;color:#875a46;width:185px;margin-top:8px}
+    .home-hero .gift,.home-hero .bow{display:none}
+    .hero-art{position:absolute;width:170px;height:205px;object-fit:contain;right:-16px;bottom:12px;filter:drop-shadow(0 16px 16px rgba(115,55,28,.19));animation:heroFloat 4s ease-in-out infinite;z-index:1}
+    @keyframes heroFloat{50%{transform:translateY(-7px) rotate(1.5deg)}}
+    .hero-kicker{position:absolute;top:-11px;left:20px;background:#3c302b;color:#fff6ea;padding:7px 12px;border-radius:9px 9px 9px 2px;font-size:11px;font-weight:800;letter-spacing:.04em;transform:rotate(-2deg);box-shadow:0 7px 15px rgba(64,39,29,.16)}
+    .hero-sticker{position:absolute;right:17px;top:22px;width:55px;height:55px;border-radius:50%;background:#fff9ee;border:1px dashed #d9804f;display:grid;place-items:center;text-align:center;padding:8px;font-size:8px;line-height:1.2;font-weight:900;color:#a74c26;transform:rotate(10deg);z-index:3;box-shadow:0 6px 12px rgba(93,48,27,.1)}
+    .home-hero .btn{left:19px;bottom:18px;height:46px;border-radius:15px;background:#3b302c;box-shadow:0 8px 0 #c86b42,0 15px 25px rgba(71,39,27,.18)}
+    .home-hero .btn:active{transform:translateY(4px) scale(.98);box-shadow:0 4px 0 #c86b42}
+    [data-screen="home"] .section{margin-top:28px}
+    [data-screen="home"] .section-head{margin-bottom:11px;padding:0 3px}
+    [data-screen="home"] .section-title{font-family:Georgia,"Songti SC",serif;font-size:20px}
+    [data-screen="home"] .section-title:after{content:"";display:inline-block;width:19px;height:6px;border-radius:99px;background:#f7cf69;margin-left:7px;transform:rotate(-4deg)}
+    [data-screen="home"] .friends-row{height:210px;display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;padding:22px 20px 14px;border-radius:30px;background:linear-gradient(160deg,#f1e8c7,#dce1b5 54%,#c8d3a6);border:1px solid rgba(99,111,69,.12);position:relative;overflow:hidden;box-shadow:inset 0 1px rgba(255,255,255,.8),0 14px 28px rgba(78,79,47,.11)}
+    [data-screen="home"] .friends-row:before{content:"FRIEND ISLAND  ·  心意在这里有了住处";position:absolute;left:14px;top:10px;font-size:8px;letter-spacing:.1em;color:#718060;font-weight:900}
+    [data-screen="home"] .friends-row:after{content:"";position:absolute;width:190px;height:95px;border:2px dashed rgba(102,116,77,.23);border-radius:50%;left:78px;top:69px;transform:rotate(-8deg);pointer-events:none}
+    [data-screen="home"] .friend-dot{position:relative;z-index:2;display:grid;grid-template-columns:45px 1fr;grid-template-rows:auto auto;align-items:center;min-width:0;text-align:left;padding:9px 10px;border-radius:21px;background:rgba(255,251,240,.79);border:1px solid rgba(255,255,255,.78);box-shadow:0 8px 16px rgba(75,78,46,.09);backdrop-filter:blur(5px)}
+    [data-screen="home"] .friend-dot:nth-child(2),[data-screen="home"] .friend-dot:nth-child(3){transform:translateY(9px)}
+    [data-screen="home"] .friend-dot:active{transform:translateY(-3px) rotate(-1deg) scale(.98)}
+    [data-screen="home"] .friend-dot:nth-child(2):active,[data-screen="home"] .friend-dot:nth-child(3):active{transform:translateY(5px) rotate(1deg) scale(.98)}
+    [data-screen="home"] .friend-dot .avatar{grid-row:1/3;margin:0;width:40px;height:40px;border:2px solid #fff;box-shadow:0 4px 0 rgba(83,91,56,.15)}
+    [data-screen="home"] .friend-dot b{margin:0;font-size:13px;align-self:end}
+    [data-screen="home"] .friend-dot span:last-child{font-size:9px;align-self:start;display:inline-flex;color:#8c654e;font-weight:700}
+    [data-screen="home"] .friend-dot span:last-child:before{content:"⌁";margin-right:3px;color:#df7c47}
+    [data-screen="home"] .reminder{display:grid;grid-template-columns:42px 1fr 42px;grid-template-rows:auto auto;gap:3px 10px;padding:14px 12px;border-radius:23px;background:#fffdf8;border:1px solid rgba(100,65,45,.08);box-shadow:0 11px 24px rgba(94,58,38,.07);position:relative;overflow:hidden;transition:.22s}
+    [data-screen="home"] .reminder:active{transform:translateY(-2px) scale(.99)}
+    [data-screen="home"] .reminder-primary{background:linear-gradient(110deg,#fffdf8 52%,#fff0df)}
+    [data-screen="home"] .reminder-secondary{margin-left:18px;background:linear-gradient(110deg,#fffdf8 55%,#ecf1e2)}
+    [data-screen="home"] .reminder .avatar{grid-row:1/3;align-self:center}
+    [data-screen="home"] .reminder .info{min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+    [data-screen="home"] .reminder .info b{font-size:14px;width:100%}
+    .event-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#a26a50;font-weight:800}
+    [data-screen="home"] .status-chip{margin:0;padding:3px 7px;font-size:9px}
+    .countdown{grid-row:1/3;grid-column:3;align-self:center;display:flex;flex-direction:column;align-items:center;color:#c95d30;line-height:1}
+    .countdown strong{font-family:Georgia,serif;font-size:24px}.countdown span{font-size:9px;margin-top:3px;color:#8d7062}
+    [data-screen="home"] .reminder .mini-btn{grid-column:2/4;width:100%;padding:7px 10px;margin-top:6px;border-radius:10px;background:transparent;color:#c65228;border:1px solid rgba(218,99,48,.18);text-align:right}
+    [data-screen="home"] .reminder .mini-btn:after{content:" →"}
+    [data-screen="home"] .nav{left:14px;right:14px;bottom:12px;height:69px;border-radius:25px;background:rgba(255,252,246,.93);border:1px solid rgba(95,61,44,.09);box-shadow:0 14px 35px rgba(70,42,29,.14);padding:6px 7px}
+    [data-screen="home"] .nav button:nth-child(2){margin-top:-17px;height:65px;background:#f47b45;color:white;border-radius:22px;box-shadow:0 8px 0 #d65f31,0 14px 24px rgba(213,91,43,.24);border:4px solid #fff8ee}
+    [data-screen="home"] .nav button:nth-child(2) i{font-size:23px}
+    [data-screen="home"] .nav button.active:not(:nth-child(2)){background:#fff0df}
   </style>
 </head>
 <body>
@@ -58,11 +113,11 @@
   <section class="screen" data-screen="home">
     <div class="scroll with-nav">
       <div class="topline"><div><p class="tiny">下午好</p><h1 class="title">小满，今天也想起谁了？</h1></div><button class="avatar" data-go="profile">满</button></div>
-      <article class="hero"><p class="eyebrow">GIFTLOOP PICKS</p><h2 class="display">今天，想为谁准备一点心意？</h2><div class="bow"></div><div class="gift"></div><button class="btn" data-start-gift>帮我挑礼物 <span>→</span></button></article>
+      <article class="hero home-hero"><span class="hero-kicker">今日心意灵感</span><p class="eyebrow">GIFTLOOP PICKS</p><h2 class="display">今天，想为谁<br>准备一点心意？</h2><p class="hero-note">选一个朋友，我们一起把心意想得更贴切。</p><img class="hero-art" src="giftloop-hero.png" alt="橙色礼物盒与丝带"><span class="hero-sticker">JUST FOR TA</span><button class="btn" data-start-gift>帮我挑礼物 <span>→</span></button></article>
       <section class="section"><div class="section-head"><h3 class="section-title">朋友岛</h3><button class="link" data-go="island">看看大家 →</button></div><div class="friends-row" id="homeFriends"></div></section>
       <section class="section"><div class="section-head"><h3 class="section-title">即将到来</h3><span class="tiny">把想念提前一点</span></div>
-        <div class="reminder"><span class="avatar sm">林</span><div class="info"><b>小林生日 <span class="star">✦</span></b><p class="tiny">9月28日 · 还有12天</p><span class="status-chip">还没准备</span></div><button class="mini-btn" data-remind="小林">去准备</button></div>
-        <div class="reminder"><span class="avatar sm green">宁</span><div class="info"><b>阿宁毕业</b><p class="tiny">10月5日 · 还有20天</p><span class="status-chip green">准备中</span></div><button class="mini-btn" data-remind="阿宁">继续</button></div>
+        <div class="reminder reminder-primary"><span class="avatar sm">林</span><div class="info"><span class="event-label">生日 · 9月28日</span><b>小林的生日快到了 <span class="star">✦</span></b><span class="status-chip">还没准备</span></div><div class="countdown"><strong>12</strong><span>天后</span></div><button class="mini-btn" data-remind="小林">去准备</button></div>
+        <div class="reminder reminder-secondary"><span class="avatar sm green">宁</span><div class="info"><span class="event-label">毕业 · 10月5日</span><b>阿宁的新阶段</b><span class="status-chip green">准备中</span></div><div class="countdown"><strong>20</strong><span>天后</span></div><button class="mini-btn" data-remind="阿宁">继续</button></div>
       </section>
     </div>
     <nav class="nav"></nav>
@@ -137,4 +192,5 @@
 </script>
 </body>
 </html>
+
 
