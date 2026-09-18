@@ -101,33 +101,47 @@
   
     /* GiftLoop onboarding — warm brown/orange profile setup */
     [data-screen="onboard"]{background:#fbf7ef}
-    [data-screen="onboard"] .scroll{padding:22px 24px 34px}
-    .onboard-brand{display:flex;align-items:center;justify-content:space-between;margin:0 0 34px}
+    [data-screen="onboard"] .scroll{padding:22px 26px 32px}
+    .onboard-brand{display:flex;align-items:center;justify-content:space-between;margin:0 0 27px}
     .onboard-brand .logo{font-family:Georgia,serif;font-size:19px;gap:9px}
     .onboard-brand .mark{width:31px;height:31px;border-radius:10px;background:#b96543;font-size:14px}
-    .onboard-skip{padding:7px 3px;color:#956f5d;font-size:12px;background:none}
+    .onboard-skip{padding:7px 2px;color:#9b887d;font-size:11px;background:none;border:0!important;box-shadow:none!important;outline:none;letter-spacing:.02em}
     .onboard-skip:active{color:#b96140;transform:scale(.96)}
-    .onboard-intro{min-height:116px;position:relative;display:flex;align-items:flex-start;margin-bottom:34px}
-    .onboard-copy{position:relative;z-index:2;width:250px}
+    .onboard-intro{position:relative;margin-bottom:20px}
+    .onboard-copy{position:relative;z-index:2;width:100%}
     .onboard-copy .eyebrow{font-size:9px;letter-spacing:.16em;color:#a96545;margin-bottom:10px}
-    .onboard-copy .display{font-size:29px;line-height:1.2;font-weight:600;color:#382d28}
-    .onboard-copy .sub{margin-top:11px;font-size:13px;line-height:1.6;color:#856f62;width:245px}
-    .onboard-visual{position:absolute;right:-5px;top:3px;width:80px;height:67px;object-fit:contain;opacity:.78;filter:drop-shadow(0 6px 9px rgba(81,51,36,.06));animation:quietFloat 5s ease-in-out infinite}
+    .onboard-copy .display{font-size:28px;line-height:1.2;font-weight:600;color:#382d28}
+    .onboard-copy .sub{margin-top:9px;font-size:12px;line-height:1.6;color:#856f62;width:auto}
     [data-screen="onboard"] .profile-card{margin:0;padding:0;background:transparent;border:0;box-shadow:none}
-    [data-screen="onboard"] .field{margin:0 0 32px}
-    [data-screen="onboard"] .field:last-child{margin-bottom:0}
+    [data-screen="onboard"] .field{margin:0}
     .field-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:11px}
     [data-screen="onboard"] .field-head label{margin:0;font-size:15px;color:#463832}
     .field-head>span{font-size:10px;color:#a18d81;text-align:right}
-    [data-screen="onboard"] .input{height:48px;border-radius:14px;padding:0 15px;background:#f7f1e8;border:1px solid rgba(110,78,60,.11);font-size:14px}
-    [data-screen="onboard"] .input:focus{border-color:#c77b56;box-shadow:0 0 0 3px rgba(199,123,86,.09);background:#fffdf9}
-    [data-screen="onboard"] .chips{gap:9px 8px}
-    [data-screen="onboard"] .chip{min-height:35px;padding:8px 13px;border-radius:99px;background:#f8f2e9;border:1px solid rgba(107,78,61,.11);color:#755f53;font-size:12px}
+    .character-stage{height:185px;display:grid;place-items:center;position:relative;margin:3px 0 10px;border-radius:34px;background:radial-gradient(circle at 50% 48%,rgba(255,255,255,.88) 0 31%,transparent 61%),linear-gradient(180deg,rgba(239,228,211,.44),rgba(251,247,239,0))}
+    .character-stage:after{content:"";position:absolute;width:105px;height:17px;bottom:21px;border-radius:50%;background:rgba(90,67,52,.07);filter:blur(5px)}
+    .muse-character{--muse-color:#c67a55;position:relative;width:100px;height:145px;z-index:2;transition:filter .35s ease;animation:characterFloat 4.5s ease-in-out infinite}
+    .muse-head{position:absolute;left:28px;top:6px;width:45px;height:49px;border-radius:48% 52% 47% 53% / 45% 45% 55% 55%;background:#f0d2b9;box-shadow:inset 0 -5px rgba(138,83,58,.04)}
+    .muse-head:before{content:"";position:absolute;left:8px;top:21px;width:4px;height:4px;border-radius:50%;background:#72584b;box-shadow:24px 0 #72584b}
+    .muse-head:after{content:"";position:absolute;left:18px;top:30px;width:10px;height:4px;border-bottom:1.5px solid #976c58;border-radius:50%}
+    .muse-hair{position:absolute;left:25px;top:1px;width:51px;height:27px;border-radius:55% 50% 40% 35%;background:#65493b;transform:rotate(-3deg);z-index:2}
+    .muse-body{position:absolute;left:20px;top:49px;width:61px;height:77px;border-radius:29px 29px 24px 24px;background:var(--muse-color);box-shadow:inset 0 -9px rgba(77,53,40,.07),0 8px 15px rgba(91,59,43,.1);transition:background .35s ease,transform .35s ease}
+    .muse-arm{position:absolute;top:61px;width:18px;height:59px;border-radius:12px;background:var(--muse-color);transition:background .35s ease}.muse-arm.left{left:10px;transform:rotate(12deg)}.muse-arm.right{right:9px;transform:rotate(-12deg)}
+    .muse-leg{position:absolute;top:116px;width:22px;height:27px;border-radius:0 0 13px 13px;background:#6b5143}.muse-leg.left{left:27px}.muse-leg.right{right:26px}
+    @keyframes characterFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+    .color-section{text-align:center;margin:0 0 25px}.color-section h3{font-size:14px;color:#493a33}.color-section p{margin-top:4px;font-size:9px;color:#a18d81}
+    .color-dots{display:flex;justify-content:center;gap:13px;margin-top:13px}
+    .color-dot{--dot:#c67a55;width:27px;height:27px;border-radius:50%;background:var(--dot);border:4px solid #fbf7ef;box-shadow:0 0 0 1px rgba(86,65,53,.1);transition:.22s}
+    .color-dot.selected{transform:scale(1.1);box-shadow:0 0 0 2px #fbf7ef,0 0 0 3px color-mix(in srgb,var(--dot),#6c4a38 25%),0 5px 10px rgba(88,62,46,.11)}
+    .identity-groups{display:grid;gap:14px;padding-top:1px}
+    .identity-group{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .identity-group>span{font-size:11px;color:#7c685d;white-space:nowrap}
+    .identity-options{display:flex;gap:6px}
+    [data-screen="onboard"] .chip{min-width:57px;min-height:31px;padding:6px 11px;border-radius:99px;background:#f7f1e8;border:1px solid rgba(107,78,61,.1);color:#755f53;font-size:11px}
     [data-screen="onboard"] .chip.selected{background:#f0d7c5;border-color:#d08a66;color:#8f4d33;font-weight:700;animation:none}
-    .onboard-cta{margin-top:39px;padding-bottom:8px}
+    .onboard-cta{margin-top:29px;padding-bottom:8px}
     .onboard-cta .btn{height:49px;border-radius:15px;background:#b96140;box-shadow:0 5px 12px rgba(135,73,45,.1);font-size:14px}
     .onboard-cta .btn:active{transform:scale(.98);background:#a95638}
-    .onboard-cta .text-skip{display:block;margin:12px auto 0;padding:4px 10px;background:none;color:#aa978b;font-size:10px}
+    .onboard-cta .text-skip{display:none}
   </style>
 </head>
 <body>
@@ -137,17 +151,19 @@
   <section class="screen onboard active" data-screen="onboard">
     <div class="scroll">
       <div class="onboard-brand"><div class="logo"><span class="mark">G</span>GiftLoop</div><button class="onboard-skip" data-action="skip-profile">跳过</button></div>
-      <div class="onboard-intro">
-        <div class="onboard-copy"><p class="eyebrow">YOUR GIFT PROFILE</p><h1 class="display">先从认识你开始</h1><p class="sub">选几个最像你的标签，让送礼更贴近你。</p></div>
-        <img src="giftloop-hero-v2.png" alt="纸艺礼物与信封" class="onboard-visual">
-      </div>
+      <div class="onboard-intro"><div class="onboard-copy"><p class="eyebrow">YOUR GIFT PROFILE</p><h1 class="display">先从认识你开始</h1><p class="sub">选一个像你的颜色，再给自己贴几个标签。</p></div></div>
       <div class="form-card profile-card">
-        <div class="field"><div class="field-head"><label>怎么称呼你？</label><span>非必填</span></div><input id="userName" class="input" placeholder="输入你的昵称" /></div>
-        <div class="field"><div class="field-head"><label>你更像哪种人？</label><span>选一个最像你的</span></div><div class="chips persona-chips"><button class="chip" data-persona>随性派</button><button class="chip" data-persona>温柔派</button><button class="chip" data-persona>热闹派</button><button class="chip" data-persona>理性派</button><button class="chip" data-persona>仪式感派</button><button class="chip" data-persona>细节控</button></div></div>
-        <div class="field"><div class="field-head"><label>送礼时，你更在意什么？</label><span>可以多选</span></div><div class="chips onboarding-chips" data-profile-group="gift"><button class="chip">实用</button><button class="chip">仪式感</button><button class="chip">惊喜感</button><button class="chip">颜值</button><button class="chip">心意</button><button class="chip">不踩雷</button></div></div>
-        <div class="field"><div class="field-head"><label>最近喜欢什么？</label><span>可选</span></div><div class="chips onboarding-chips" data-profile-group="interest"><button class="chip">咖啡</button><button class="chip">电影</button><button class="chip">旅行</button><button class="chip">看展</button><button class="chip">香氛</button><button class="chip">手作</button><button class="chip">数码</button><button class="chip">穿搭</button></div></div>
+        <input id="userName" type="hidden" value="">
+        <div class="character-stage" aria-label="你的气质角色"><div class="muse-character" id="museCharacter"><span class="muse-hair"></span><span class="muse-head"></span><span class="muse-arm left"></span><span class="muse-arm right"></span><span class="muse-body"></span><span class="muse-leg left"></span><span class="muse-leg right"></span></div></div>
+        <div class="color-section"><h3>选一个像你的颜色</h3><p>不同颜色，代表不同的你。</p><div class="color-dots"><button class="color-dot selected" data-avatar-color="#c67a55" style="--dot:#c67a55" aria-label="暖橙"></button><button class="color-dot" data-avatar-color="#d7a0a0" style="--dot:#d7a0a0" aria-label="柔粉"></button><button class="color-dot" data-avatar-color="#ddbd70" style="--dot:#ddbd70" aria-label="浅黄"></button><button class="color-dot" data-avatar-color="#9fad8d" style="--dot:#9fad8d" aria-label="浅绿"></button><button class="color-dot" data-avatar-color="#91a7ad" style="--dot:#91a7ad" aria-label="雾蓝"></button><button class="color-dot" data-avatar-color="#a497aa" style="--dot:#a497aa" aria-label="灰紫"></button></div></div>
+        <div class="identity-groups">
+          <div class="identity-group" data-trait-group="social"><span>你更喜欢</span><div class="identity-options"><button class="chip" data-trait>独处</button><button class="chip" data-trait>热闹</button></div></div>
+          <div class="identity-group" data-trait-group="gift"><span>送礼更在意</span><div class="identity-options"><button class="chip" data-trait>实用</button><button class="chip" data-trait>外观</button></div></div>
+          <div class="identity-group" data-trait-group="rhythm"><span>你的节奏</span><div class="identity-options"><button class="chip" data-trait>随性</button><button class="chip" data-trait>仪式感</button></div></div>
+          <div class="identity-group" data-trait-group="express"><span>表达心意</span><div class="identity-options"><button class="chip" data-trait>直接</button><button class="chip" data-trait>含蓄</button></div></div>
+        </div>
       </div>
-      <div class="onboard-cta"><button class="btn full" data-action="create-profile">开启我的送礼地图 <span>→</span></button><button class="text-skip" data-action="skip-profile">暂时跳过</button></div>
+      <div class="onboard-cta"><button class="btn full" data-action="create-profile">开启我的送礼地图 <span>→</span></button></div>
     </div>
   </section>
 <section class="screen" data-screen="island-loading"><div class="gen-island"><div class="success-house"></div><h1 class="title">你的朋友岛正在生成……</h1><p class="sub" style="margin-top:8px">正在给每一段关系留好位置</p></div></section>
@@ -228,7 +244,7 @@
     const action=e.target.closest('[data-action]')?.dataset.action;if(action==='create-profile'){const name=(document.getElementById('userName').value||'小满').trim();const initial=name.slice(-1)||'满';document.querySelector('[data-screen="home"] .topline .title').textContent=name+'，今天也想起谁了？';document.querySelector('[data-screen="home"] .topline>.avatar').textContent=initial;document.querySelector('[data-screen="profile"] .profile-hero h1').textContent=name;document.querySelector('[data-screen="profile"] .profile-hero .avatar').textContent=initial;show('island-loading');setTimeout(()=>show('home',false),1800)}if(action==='generate'){show('generating');const lines=['正在避开以前送过的类型……','正在匹配你的预算……','正在整理礼物方向……'];let i=0;const timer=setInterval(()=>{document.querySelector('[data-screen="generating"] h1').textContent=lines[i++]||'礼物盒快打开了……';if(i>lines.length){clearInterval(timer);setTimeout(()=>{renderRecs();show('results',false)},500)}},650)}if(action==='regenerate'){toast('换了一组新的思路');document.getElementById('recommendations').prepend(document.getElementById('recommendations').lastElementChild)}if(action==='save-gift'){const f=state.selected||state.friends[0],gift=document.getElementById('giftName').value||'手冲咖啡器具';state.history.push({friend:f.name,year:'2026',occasion:state.occasion,gift});sessionStorage.setItem('giftloop-history',JSON.stringify(state.history));show('success')}if(action==='view-house'){show('friend-house')}if(action==='reset'){sessionStorage.clear();show('onboard')}
   });
   document.getElementById('friendNext').onclick=()=>{if(friendStep<2){friendStep++;renderFriendForm()}else{const f={name:'小禾',initial:'禾',relation:'好友',date:'11月8日生日',meta:'还有52天',interests:['烘焙','植物'],recent:'准备毕业',color:'green'};if(!state.friends.some(x=>x.name===f.name))state.friends.push(f);sessionStorage.setItem('giftloop-friends',JSON.stringify(state.friends));state.selected=f;friendStep=0;renderFriendForm();show('friend-house');toast('为小禾建好小屋了')}};
-  document.addEventListener('click',e=>{const persona=e.target.closest('[data-persona]');if(persona){document.querySelectorAll('[data-persona]').forEach(x=>x.classList.remove('selected'));persona.classList.add('selected')}const action=e.target.closest('[data-action]')?.dataset.action;if(action==='skip-profile')show('home',false);if(action==='create-profile'){const profile={name:document.getElementById('userName').value.trim(),persona:document.querySelector('[data-persona].selected')?.textContent||'',gift:[...document.querySelectorAll('[data-profile-group="gift"] .selected')].map(x=>x.textContent),interests:[...document.querySelectorAll('[data-profile-group="interest"] .selected')].map(x=>x.textContent)};sessionStorage.setItem('giftloop-profile',JSON.stringify(profile))}});
+  document.addEventListener('click',e=>{const color=e.target.closest('[data-avatar-color]');if(color){document.querySelectorAll('[data-avatar-color]').forEach(x=>x.classList.remove('selected'));color.classList.add('selected');document.getElementById('museCharacter').style.setProperty('--muse-color',color.dataset.avatarColor)}const trait=e.target.closest('[data-trait]');if(trait){trait.closest('[data-trait-group]').querySelectorAll('[data-trait]').forEach(x=>x.classList.remove('selected'));trait.classList.add('selected')}const action=e.target.closest('[data-action]')?.dataset.action;if(action==='skip-profile')show('home',false);if(action==='create-profile'){const profile={name:'',color:document.querySelector('[data-avatar-color].selected')?.dataset.avatarColor||'',traits:Object.fromEntries([...document.querySelectorAll('[data-trait-group]')].map(g=>[g.dataset.traitGroup,g.querySelector('.selected')?.textContent||'']))};sessionStorage.setItem('giftloop-profile',JSON.stringify(profile))}});
   renderFriendForm();renderRecs();renderAll();
   window.giftLoop={openFriend:(name)=>{state.selected=state.friends.find(f=>f.name===name)||state.friends[0];show('friend-house');return {friend:state.selected.name,screen:'friend-house'}},startGift:(name)=>{state.selected=state.friends.find(f=>f.name===name)||null;show(state.selected?'occasion':'pick-friend');return {friend:state.selected?.name||null,screen:current()}},getState:()=>({screen:current(),friends:state.friends.map(f=>f.name),history:state.history})};
   try{const mc=document.modelContext;if(mc?.registerTool){mc.registerTool({name:'start_gift_flow',title:'开始挑礼物',description:'为指定朋友打开 GiftLoop 挑礼物流程。',inputSchema:{type:'object',properties:{friend:{type:'string'}},additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},execute:({friend}={})=>window.giftLoop.startGift(friend)});mc.registerTool({name:'read_giftloop_state',title:'查看 GiftLoop 状态',description:'读取当前页面、朋友与礼物记录。',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:false},execute:()=>window.giftLoop.getState()})}}catch(err){console.debug('WebMCP unavailable',err)}
