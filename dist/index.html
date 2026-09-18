@@ -79,19 +79,26 @@
     [data-screen="home"] .water-ripple{position:absolute;z-index:1;width:14px;height:7px;margin:-3.5px 0 0 -7px;border:1px solid rgba(138,121,91,.25);border-radius:50%;pointer-events:none;animation:waterRipple .85s ease-out forwards}
     @keyframes islandBreathe{0%,100%{transform:translateY(0) rotate(-.45deg)}50%{transform:translateY(-3px) rotate(.45deg)}}
     @keyframes waterRipple{to{transform:scale(8,5);opacity:0}}
-    [data-screen="home"] .reminder{display:grid;grid-template-columns:38px 1fr 45px;grid-template-rows:auto auto;gap:3px 11px;padding:15px;border-radius:20px;background:#fffdf9;border:1px solid rgba(102,76,62,.08);box-shadow:0 6px 18px rgba(85,57,42,.045);position:relative;transition:.18s}
-    [data-screen="home"] .reminder:active{transform:translateY(-1px);border-color:rgba(182,103,67,.16)}
-    [data-screen="home"] .reminder-primary,[data-screen="home"] .reminder-secondary{margin-left:0;background:#fffdf9}
-    [data-screen="home"] .reminder+.reminder{margin-top:9px}
-    [data-screen="home"] .reminder .avatar{grid-row:1/3;align-self:center;width:36px;height:36px;font-size:12px}
-    [data-screen="home"] .reminder .info{min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:5px 7px}
-    [data-screen="home"] .reminder .info b{font-size:13px;width:100%;font-weight:700}
-    .event-label{font-size:10px;color:#9a7b6b;font-weight:500}
-    [data-screen="home"] .status-chip{margin:0;padding:3px 7px;font-size:9px;background:#f5ebe1;color:#9d654a}
-    [data-screen="home"] .status-chip.green{background:#e9eee5;color:#6a7b68}
-    .countdown{grid-row:1/3;grid-column:3;align-self:center;display:flex;flex-direction:column;align-items:flex-end;color:#b86543;line-height:1}
-    .countdown strong{font-family:Georgia,serif;font-size:22px;font-weight:600}.countdown span{font-size:9px;margin-top:4px;color:#9f8d82}
-    [data-screen="home"] .reminder .mini-btn{grid-column:2/4;width:auto;justify-self:start;padding:0;margin-top:5px;border:0;background:transparent;color:#ad6243;font-size:11px;font-weight:700;box-shadow:none}
+    [data-screen="home"] .reminder{display:grid;grid-template-columns:58px minmax(0,1fr) 42px;grid-template-rows:auto auto;gap:10px 12px;padding:16px 15px 13px;border-radius:23px;background:linear-gradient(145deg,#fffdf8,#faf4ea);border:1px solid rgba(102,76,62,.075);box-shadow:0 7px 20px rgba(85,57,42,.045);position:relative;overflow:hidden;transition:transform .2s,border-color .2s}
+    [data-screen="home"] .reminder:before{content:"";position:absolute;width:92px;height:92px;right:-42px;top:-50px;border-radius:50%;background:rgba(198,122,85,.045)}
+    [data-screen="home"] .reminder:active{transform:translateY(-2px);border-color:rgba(182,103,67,.15)}
+    [data-screen="home"] .reminder-primary,[data-screen="home"] .reminder-secondary{margin-left:0}
+    [data-screen="home"] .reminder+.reminder{margin-top:10px}
+    .person-identity{grid-row:1/3;align-self:start;display:grid;justify-items:center;gap:5px;background:none;border:0;outline:none;box-shadow:none;position:relative;z-index:2}
+    .person-name{font-size:10px;color:#655047;font-weight:700}
+    .mini-person{--person-color:#c67a55;position:relative;display:block;width:46px;height:51px;border-radius:18px;background:rgba(239,226,208,.55)}
+    .mini-person .head{position:absolute;left:15px;top:7px;width:17px;height:18px;border-radius:48% 52% 46% 54%;background:#edcdb4;z-index:2}
+    .mini-person .hair{position:absolute;left:14px;top:5px;width:19px;height:10px;border-radius:55% 50% 38% 35%;background:#65493b;z-index:3}
+    .mini-person .body{position:absolute;left:10px;top:22px;width:27px;height:24px;border-radius:13px 13px 10px 10px;background:var(--person-color);box-shadow:inset 0 -4px rgba(71,50,41,.06)}
+    .mini-person:after{content:"";position:absolute;left:12px;right:12px;bottom:2px;height:5px;border-radius:50%;background:rgba(87,64,49,.08);filter:blur(2px)}
+    [data-screen="home"] .reminder .info{min-width:0;display:flex;flex-wrap:wrap;align-items:center;align-content:start;gap:5px 7px;position:relative;z-index:2}
+    [data-screen="home"] .reminder .info b{font-size:12px;line-height:1.35;width:100%;font-weight:700;color:#4b3931}
+    .event-label{font-size:9px;color:#9a7b6b;font-weight:600;letter-spacing:.02em}
+    [data-screen="home"] .status-chip{margin:0;padding:3px 7px;font-size:8px;font-weight:600;background:#f3e4d7;color:#9b6045}
+    [data-screen="home"] .status-chip.green{background:#e7eee3;color:#657765}
+    .countdown{grid-column:3;grid-row:1;align-self:start;display:flex;flex-direction:column;align-items:center;color:#b86543;line-height:1;position:relative;z-index:2}
+    .countdown strong{font-family:Georgia,serif;font-size:23px;font-weight:600}.countdown span{font-size:8px;margin-top:4px;color:#9f8d82}
+    [data-screen="home"] .reminder .mini-btn{grid-column:2/4;width:max-content;justify-self:start;padding:6px 9px;margin:0;border:1px solid rgba(177,98,66,.13);border-radius:10px;background:rgba(245,230,218,.68);color:#a45d40;font-size:9px;font-weight:700;box-shadow:none;outline:none}
     [data-screen="home"] .reminder .mini-btn:after{content:"  →"}
     [data-screen="home"] .nav{left:14px;right:14px;bottom:12px;height:68px;border-radius:23px;background:rgba(255,253,249,.95);border:1px solid rgba(92,67,54,.08);box-shadow:0 10px 28px rgba(71,48,35,.09);padding:7px}
     [data-screen="home"] .nav button{color:#a39187}
@@ -174,8 +181,8 @@
       <article class="hero home-hero"><p class="eyebrow">A LITTLE THOUGHT</p><h2 class="display">今天，想为谁<br>准备一点心意？</h2><p class="hero-note">从你记得的那些小事开始。</p><img class="hero-art" src="giftloop-hero-v2.png" alt="纸艺礼物与信封"><button class="btn" data-start-gift>帮我挑礼物 <span>→</span></button></article>
       <section class="section"><div class="section-head"><h3 class="section-title">朋友岛</h3><button class="link" data-go="island">看看大家 →</button></div><div class="friends-row" id="homeFriends"></div></section>
       <section class="section"><div class="section-head"><h3 class="section-title">即将到来</h3><span class="tiny">把想念提前一点</span></div>
-        <div class="reminder reminder-primary"><span class="avatar sm">林</span><div class="info"><span class="event-label">生日 · 9月28日</span><b>小林的生日快到了 <span class="star">✦</span></b><span class="status-chip">还没准备</span></div><div class="countdown"><strong>12</strong><span>天后</span></div><button class="mini-btn" data-remind="小林">去准备</button></div>
-        <div class="reminder reminder-secondary"><span class="avatar sm green">宁</span><div class="info"><span class="event-label">毕业 · 10月5日</span><b>阿宁的新阶段</b><span class="status-chip green">准备中</span></div><div class="countdown"><strong>20</strong><span>天后</span></div><button class="mini-btn" data-remind="阿宁">继续</button></div>
+        <div class="reminder reminder-primary"><button class="person-identity" data-house="小林" aria-label="进入小林的小屋"><span class="mini-person" style="--person-color:#c67a55"><i class="hair"></i><i class="head"></i><i class="body"></i></span><b class="person-name">小林</b></button><div class="info"><span class="event-label">生日 · 9月28日</span><b>小林的生日快到了 <span class="star">✦</span></b><span class="status-chip">还没准备</span></div><div class="countdown"><strong>12</strong><span>天后</span></div><button class="mini-btn" data-remind="小林">去准备</button></div>
+        <div class="reminder reminder-secondary"><button class="person-identity" data-house="阿宁" aria-label="进入阿宁的小屋"><span class="mini-person" style="--person-color:#9fad8d"><i class="hair"></i><i class="head"></i><i class="body"></i></span><b class="person-name">阿宁</b></button><div class="info"><span class="event-label">毕业 · 10月5日</span><b>阿宁的新阶段即将开始</b><span class="status-chip green">准备中</span></div><div class="countdown"><strong>20</strong><span>天后</span></div><button class="mini-btn" data-remind="阿宁">继续</button></div>
       </section>
     </div>
     <nav class="nav"></nav>
