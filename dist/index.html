@@ -139,6 +139,21 @@
     [data-screen="home"] .reminder .info b{font-size:12px;color:#49372f}
     [data-screen="home"] .reminder-secondary{opacity:.94}
     [data-screen="home"] .section:last-child{margin-top:18px;padding-bottom:8px}
+    /* Friend islands: three-at-a-time horizontal waterway */
+    [data-screen="home"] .friends-row{height:174px;display:flex;align-items:flex-end;justify-content:flex-start;gap:6px;padding:52px 11px 15px;overflow-x:auto;overflow-y:hidden;touch-action:pan-x;scroll-snap-type:x proximity;scroll-padding:11px;scrollbar-width:none}
+    [data-screen="home"] .friends-row::-webkit-scrollbar{display:none}
+    [data-screen="home"] .friends-row:before{position:absolute;inset:auto;left:0;right:0;top:61px;height:90px;background:radial-gradient(ellipse at 18% 45%,transparent 0 25px,rgba(126,139,124,.1) 26px 27px,transparent 29px),radial-gradient(ellipse at 70% 50%,transparent 0 37px,rgba(126,139,124,.075) 38px 39px,transparent 41px)}
+    [data-screen="home"] .friends-row:after{content:"左右滑动，看见更多朋友";position:absolute;bottom:5px}
+    [data-screen="home"] .friend-dot,
+    [data-screen="home"] .friend-dot:nth-child(1),
+    [data-screen="home"] .friend-dot:nth-child(2),
+    [data-screen="home"] .friend-dot:nth-child(3),
+    [data-screen="home"] .friend-dot:nth-child(4){position:relative;left:auto;right:auto;top:auto;bottom:auto;flex:0 0 96px;width:96px;height:88px;z-index:3;scroll-snap-align:start}
+    [data-screen="home"] .friend-dot:nth-child(1){flex-basis:100px;width:100px;z-index:5}
+    [data-screen="home"] .island-person{left:14px;transform:scale(.73)}
+    [data-screen="home"] .friend-dot:nth-child(1) .island-person{left:16px;transform:scale(.77)}
+    .island-meta{right:7px}
+    .island-alert{position:absolute;left:9px;top:9px}
     [data-screen="home"] .nav button{color:#a39187}
     [data-screen="home"] .nav button:nth-child(2){margin:0;height:auto;background:transparent;color:#b96140;border:0;border-radius:16px;box-shadow:none}
     [data-screen="home"] .nav button:nth-child(2) i{font-size:19px}
