@@ -7,7 +7,7 @@
   <meta name="description" content="GiftLoop 是一个有温度的送礼决策助手。" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23F47B45'/%3E%3Cpath d='M16 29h32v24H16zM13 23h38v10H13z' fill='%23FFF8ED'/%3E%3Cpath d='M32 23v30' stroke='%23F6C95F' stroke-width='5'/%3E%3Cpath d='M31 23c-9 0-13-5-11-9 2-4 10-1 12 8m1 1c9 0 13-5 11-9-2-4-10-1-12 8' fill='none' stroke='%23FFF8ED' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
   <style>
-    :root{--orange:#f47b45;--orange-dark:#d85a2d;--cream:#fffaf1;--apricot:#fff0df;--butter:#f7cf69;--sage:#9bb69c;--ink:#352a26;--muted:#806f67;--line:rgba(74,48,37,.1);--white:#fffdf9;--shadow:0 18px 45px rgba(104,59,36,.13)}
+    :root{--color-bg:#FFF9F2;--color-surface:#FFFFFF;--color-peach:#FBE4D2;--color-primary:#E4774F;--color-primary-pressed:#CB633F;--color-yellow:#F1C98B;--color-green:#B8C6A5;--color-purple:#C9B2D8;--color-text-primary:#4A2F27;--color-text-secondary:rgba(74,47,39,.66);--color-text-weak:rgba(74,47,39,.46);--color-border:rgba(105,72,60,.12);--color-divider:rgba(105,72,60,.07);--color-disabled:#D8CFC7;--color-shadow:rgba(118,70,49,.10);--orange:var(--color-primary);--orange-dark:var(--color-primary-pressed);--cream:var(--color-bg);--apricot:var(--color-peach);--butter:var(--color-yellow);--sage:var(--color-green);--ink:var(--color-text-primary);--muted:var(--color-text-secondary);--line:var(--color-border);--white:var(--color-surface);--shadow:0 18px 45px var(--color-shadow)}
     *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#f2ede6;color:var(--ink);font-family:"PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif}button,input,textarea{font:inherit}button{cursor:pointer;color:inherit}
     body{display:grid;place-items:center;padding:32px;min-width:454px;min-height:908px;overflow:auto}.device{width:390px;height:844px;min-width:390px;min-height:844px;flex:none;background:var(--cream);border-radius:42px;overflow:hidden;position:relative;box-shadow:0 35px 100px rgba(61,39,28,.22),0 0 0 1px rgba(255,255,255,.12) inset;border:8px solid #261f1c}
     .status{height:31px;padding:9px 20px 0;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700;position:absolute;z-index:50;top:0;left:0;right:0;pointer-events:none}.signals{display:flex;gap:4px;align-items:center}.dot{width:4px;height:4px;background:var(--ink);border-radius:50%}.pill-signal{width:16px;height:7px;border:1.5px solid var(--ink);border-radius:4px;position:relative}.pill-signal:after{content:"";position:absolute;inset:1px 3px 1px 1px;background:var(--ink);border-radius:2px}
@@ -207,6 +207,60 @@
     .onboard-cta .btn{height:49px;border-radius:15px;background:#b96140;box-shadow:0 5px 12px rgba(135,73,45,.1);font-size:14px}
     .onboard-cta .btn:active{transform:scale(.98);background:#a95638}
     .onboard-cta .text-skip{display:none}
+    /* GiftLoop global color system — cream, peach, orange and personality accents */
+    html,body{background:#F5EEE7;color:var(--color-text-primary)}
+    .device,.screen,[data-screen="home"],[data-screen="onboard"]{background:var(--color-bg)}
+    .title,.display,.section-title,h1,h2,h3,h4{color:var(--color-text-primary)}
+    .sub,.tiny,.event-label,.person-name,.island-meta small{color:var(--color-text-secondary)}
+    .page-header{background:linear-gradient(var(--color-bg) 72%,rgba(255,249,242,0))}
+    .btn,.mini-btn,.mark,.onboard-brand .mark,.onboard-cta .btn{background:var(--color-primary);color:#fff;box-shadow:0 7px 18px rgba(228,119,79,.14)}
+    .btn:active,.mini-btn:active,.onboard-cta .btn:active{background:var(--color-primary-pressed)}
+    .btn:disabled{background:var(--color-disabled);color:rgba(74,47,39,.42);box-shadow:none}
+    .btn.soft{background:var(--color-peach);color:var(--color-primary-pressed);border-color:rgba(228,119,79,.15)}
+    .link,.eyebrow{color:var(--color-primary)}
+    .hero,.home-hero,.profile-hero{background:linear-gradient(145deg,var(--color-peach),#F8D9C1);border-color:rgba(228,119,79,.10);box-shadow:0 9px 24px rgba(118,70,49,.07)}
+    .home-hero .btn{background:var(--color-primary)}.home-hero .btn:active{background:var(--color-primary-pressed)}
+    .form-card,.detail-block,.recommend-card,.person-option,.reminder{background:var(--color-surface);border-color:var(--color-border);box-shadow:0 8px 24px rgba(118,70,49,.055)}
+    .input,.chip{background:#FFFCF8;border-color:var(--color-border);color:var(--color-text-primary)}
+    .input:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(228,119,79,.1)}
+    .chip.selected,.choice.selected{background:var(--color-peach);border-color:var(--color-primary);color:var(--color-primary-pressed)}
+    .choice,.friends-row{background:var(--color-surface);border-color:var(--color-border)}
+    .choice .symbol,.tag,.price{background:var(--color-peach);color:var(--color-primary-pressed)}
+    .choice.selected .symbol{background:var(--color-primary);color:#fff}
+    .date-card,.result-head{background:var(--color-peach);color:var(--color-text-primary)}
+    .result-head .sub{color:var(--color-text-secondary)}
+    .result-head .eyebrow{color:var(--color-primary)}
+    .direction-art{background:linear-gradient(145deg,var(--color-yellow),var(--color-peach))}
+    .memory-mark,.status-chip{background:var(--color-peach);color:var(--color-primary-pressed)}
+    .status-chip.green{background:color-mix(in srgb,var(--color-green),white 58%);color:#526346}
+    .countdown,.countdown strong,.star{color:var(--color-primary)}
+    .nav,[data-screen="home"] .nav{background:rgba(255,255,255,.95);border-color:var(--color-border);box-shadow:0 10px 28px rgba(118,70,49,.08)}
+    .nav button,[data-screen="home"] .nav button{color:rgba(74,47,39,.48)}
+    .nav button.active,[data-screen="home"] .nav button.active{background:var(--color-peach);color:var(--color-primary)}
+    [data-screen="home"] .nav button:nth-child(2){color:var(--color-primary)}
+    [data-screen="home"] .friends-row{background:radial-gradient(ellipse at 18% 14%,rgba(255,255,255,.9),transparent 38%),radial-gradient(ellipse at 80% 75%,rgba(184,198,165,.18),transparent 42%),linear-gradient(150deg,var(--color-bg),#F1F3E9);border-color:rgba(105,72,60,.08)}
+    .island-alert{background:rgba(255,255,255,.97);color:var(--color-text-primary);border-color:rgba(228,119,79,.12);box-shadow:0 9px 20px rgba(118,70,49,.10)}
+    .island-alert:after{background:#fff;border-color:rgba(228,119,79,.1)}
+    .island-alert-copy strong{color:var(--color-text-primary)}.island-alert-copy small{color:var(--color-text-secondary)}
+    .island-alert-relation{background:var(--color-peach);color:var(--color-primary-pressed)}
+    .island-alert>span:last-child,.island-alert span{color:var(--color-primary)}
+    [data-screen="home"] .reminder{background:radial-gradient(circle at 94% 8%,rgba(228,119,79,.07),transparent 29%),var(--color-surface);border-color:var(--color-border)}
+    [data-screen="home"] .reminder .mini-btn{background:var(--color-peach);color:var(--color-primary-pressed);border-color:rgba(228,119,79,.13)}
+    [data-screen="home"] .reminder .info b{color:var(--color-text-primary)}
+    [data-screen="onboard"] .character-stage{background:radial-gradient(circle at 50% 48%,rgba(255,255,255,.94) 0 31%,transparent 61%),linear-gradient(180deg,rgba(251,228,210,.48),rgba(255,249,242,0))}
+    [data-screen="onboard"] .chip{background:#FFFDF9;border-color:var(--color-border);color:var(--color-text-secondary)}
+    [data-screen="onboard"] .chip.selected{background:var(--color-peach);border-color:var(--color-primary);color:var(--color-primary-pressed)}
+    .color-dot{border-color:var(--color-bg)}
+    .muse-character{--muse-color:var(--color-primary)}
+    .avatar{background:linear-gradient(145deg,#EE9876,var(--color-primary))}
+    .avatar.green{background:linear-gradient(145deg,#D4DEC8,var(--color-green))}
+    .avatar.yellow{background:linear-gradient(145deg,#F7DDAF,var(--color-yellow))}
+    .avatar.brown{background:linear-gradient(145deg,#DDC8E8,var(--color-purple))}
+    [data-screen="home"] .friend-dot:nth-child(1) .island-ground:after{background:linear-gradient(145deg,#F7ECD9,#E8D8B9)}
+    [data-screen="home"] .friend-dot:nth-child(2) .island-ground:after{background:linear-gradient(145deg,#DDE5D2,var(--color-green))}
+    [data-screen="home"] .friend-dot:nth-child(3) .island-ground:after{background:linear-gradient(145deg,#F8E8C6,var(--color-yellow))}
+    [data-screen="home"] .friend-dot:nth-child(4) .island-ground:after{background:linear-gradient(145deg,#E9DBEF,var(--color-purple))}
+    .toast{background:var(--color-text-primary);color:#fff}
   </style>
 </head>
 <body>
@@ -220,7 +274,7 @@
       <div class="form-card profile-card">
         <input id="userName" type="hidden" value="">
         <div class="character-stage" aria-label="你的气质角色"><div class="muse-character" id="museCharacter"><span class="muse-hair"></span><span class="muse-head"></span><span class="muse-arm left"></span><span class="muse-arm right"></span><span class="muse-body"></span><span class="muse-leg left"></span><span class="muse-leg right"></span></div></div>
-        <div class="color-section"><h3>选一个像你的颜色</h3><p>不同颜色，代表不同的你。</p><div class="color-dots"><button class="color-dot selected" data-avatar-color="#c67a55" style="--dot:#c67a55" aria-label="暖橙"></button><button class="color-dot" data-avatar-color="#d7a0a0" style="--dot:#d7a0a0" aria-label="柔粉"></button><button class="color-dot" data-avatar-color="#ddbd70" style="--dot:#ddbd70" aria-label="浅黄"></button><button class="color-dot" data-avatar-color="#9fad8d" style="--dot:#9fad8d" aria-label="浅绿"></button><button class="color-dot" data-avatar-color="#91a7ad" style="--dot:#91a7ad" aria-label="雾蓝"></button><button class="color-dot" data-avatar-color="#a497aa" style="--dot:#a497aa" aria-label="灰紫"></button></div></div>
+        <div class="color-section"><h3>选一个像你的颜色</h3><p>不同颜色，代表不同的你。</p><div class="color-dots"><button class="color-dot selected" data-avatar-color="#E4774F" style="--dot:#E4774F" aria-label="暖橙"></button><button class="color-dot" data-avatar-color="#FBE4D2" style="--dot:#FBE4D2" aria-label="柔粉"></button><button class="color-dot" data-avatar-color="#F1C98B" style="--dot:#F1C98B" aria-label="浅黄"></button><button class="color-dot" data-avatar-color="#B8C6A5" style="--dot:#B8C6A5" aria-label="浅绿"></button><button class="color-dot" data-avatar-color="#B9C8CE" style="--dot:#B9C8CE" aria-label="雾蓝"></button><button class="color-dot" data-avatar-color="#C9B2D8" style="--dot:#C9B2D8" aria-label="灰紫"></button></div></div>
         <div class="identity-groups">
           <div class="identity-group" data-trait-group="social"><span>你更喜欢</span><div class="identity-options"><button class="chip" data-trait>独处</button><button class="chip" data-trait>热闹</button></div></div>
           <div class="identity-group" data-trait-group="gift"><span>送礼更在意</span><div class="identity-options"><button class="chip" data-trait>实用</button><button class="chip" data-trait>外观</button></div></div>
@@ -290,7 +344,7 @@
   function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._id);t._id=setTimeout(()=>t.classList.remove('show'),1600)}
   const navItems=[['home','⌂','首页'],['pick-friend','◇','挑礼物'],['island','○','朋友'],['records','▣','记录'],['profile','·','我的']];
   function renderNav(){document.querySelectorAll('.nav').forEach(nav=>{nav.innerHTML=navItems.map(([s,i,l])=>`<button data-go="${s}" class="${current()===s?'active':''}"><i>${i}</i><span>${l}</span></button>`).join('')})}
-  function renderHome(){const colors=['#c67a55','#9fad8d','#ddbd70','#a497aa'];document.getElementById('homeFriends').innerHTML=state.friends.slice(0,4).map((f,i)=>`<button class="friend-dot" data-house="${f.name}" aria-label="进入${f.name}的小屋"><span class="island-shell"><i class="island-ground"></i><span class="mini-person island-person" style="--person-color:${colors[i]}"><i class="hair"></i><i class="head"></i><i class="body"></i></span><i class="island-sprout"></i><i class="island-stone"></i><span class="island-meta"><b>${f.name}</b><small>${f.date.replace(/\d+月\d+日/,'')||'普通的一天'}</small></span></span></button>`).join('')+`<button class="island-alert" data-remind="小林"><span class="island-alert-photo"><span class="mini-person" style="--person-color:#c67a55"><i class="hair"></i><i class="head"></i><i class="body"></i></span></span><span class="island-alert-copy"><strong>小林 · <i class="island-alert-relation">好友</i></strong><small>生日快到了</small></span><span>去准备 →</span></button>`;setupFriendIslands()}
+  function renderHome(){const colors=['#E4774F','#B8C6A5','#F1C98B','#C9B2D8'];document.getElementById('homeFriends').innerHTML=state.friends.slice(0,4).map((f,i)=>`<button class="friend-dot" data-house="${f.name}" aria-label="进入${f.name}的小屋"><span class="island-shell"><i class="island-ground"></i><span class="mini-person island-person" style="--person-color:${colors[i]}"><i class="hair"></i><i class="head"></i><i class="body"></i></span><i class="island-sprout"></i><i class="island-stone"></i><span class="island-meta"><b>${f.name}</b><small>${f.date.replace(/\d+月\d+日/,'')||'普通的一天'}</small></span></span></button>`).join('')+`<button class="island-alert" data-remind="小林"><span class="island-alert-photo"><span class="mini-person" style="--person-color:#E4774F"><i class="hair"></i><i class="head"></i><i class="body"></i></span></span><span class="island-alert-copy"><strong>小林 · <i class="island-alert-relation">好友</i></strong><small>生日快到了</small></span><span>去准备 →</span></button>`;setupFriendIslands()}
   function renderIsland(){const map=document.getElementById('islandMap');map.querySelectorAll('.island,.add-island').forEach(x=>x.remove());state.friends.slice(0,5).forEach((f,i)=>{const el=document.createElement('button');el.className=`island i${i%4+1} ${i>3?'newborn':''}`;if(i>3){el.style.left='140px';el.style.top='310px';el.style.right='auto'}el.dataset.house=f.name;el.innerHTML=`<span class="avatar sm ${f.color||''}">${f.initial}</span><b>${f.name}</b><small>${f.date}</small>`;map.appendChild(el)});const add=document.createElement('button');add.className='add-island';add.dataset.go='add-friend';add.textContent='＋ 新位置';map.appendChild(add)}
   function renderPersonList(){document.getElementById('personList').innerHTML=state.friends.map(f=>`<button class="person-option" data-pick="${f.name}"><span class="avatar ${f.color||''}">${f.initial}</span><span class="info"><b>${f.name}</b><span>${f.relation} · ${f.interests.join('、')}</span></span><b>›</b></button>`).join('')}
   function renderHouse(){const f=state.selected||state.friends[0];const gifts=state.history.filter(h=>h.friend===f.name);document.getElementById('friendHouse').innerHTML=`<div class="profile-hero"><span class="avatar lg ${f.color||''}">${f.initial}</span><h1>${f.name}</h1><p class="sub">${f.relation} · ${f.date}</p><div>${f.interests.map(x=>`<span class="tag">${x}</span>`).join('')}</div></div><button class="btn full" style="margin-top:14px" data-start-for="${f.name}">为 TA 挑礼物 →</button><section class="section"><div class="section-head"><h3 class="section-title">重要日</h3><span class="tiny">已开启提醒</span></div><div class="date-card"><div class="date-num">12</div><div><b>${f.date}</b><p class="tiny" style="color:#d9c9bf;margin-top:3px">还有12天 · 今年想试试新方向</p></div></div></section><section class="section"><div class="section-head"><h3 class="section-title">最近记得的事</h3><button class="link" data-toast="可以继续补充">＋ 补充</button></div><div class="detail-block">${f.interests.map(x=>`<span class="tag">${x}</span>`).join('')}<span class="tag">喜欢实用的东西</span>${f.recent?`<p class="sub" style="margin-top:10px">${f.recent}</p>`:''}</div></section><section class="section"><div class="section-head"><h3 class="section-title">礼物记录</h3><span class="tiny">${gifts.length} 份心意</span></div>${gifts.length?gifts.map(g=>`<div class="memory"><span class="memory-mark">${g.year.slice(-2)}</span><div class="info"><h4>${g.year} · ${g.occasion}</h4><p>${g.gift}</p></div><span>›</span></div>`).join(''):'<div class="detail-block"><p class="sub">还没有记录。下一份心意会留在这里。</p></div>'}</section>`}
