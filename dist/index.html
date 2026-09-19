@@ -163,7 +163,7 @@
     [data-screen="home"] .nav button:nth-child(2){margin:0;height:auto;background:transparent;color:#b96140;border:0;border-radius:16px;box-shadow:none}
     [data-screen="home"] .nav button:nth-child(2) i{font-size:19px}
     [data-screen="home"] .nav button.active{background:#f6e9dd;color:#a85537}
-  
+
     /* GiftLoop onboarding — warm brown/orange profile setup */
     [data-screen="onboard"]{background:#fbf7ef}
     [data-screen="onboard"] .scroll{padding:22px 26px 32px}
@@ -444,7 +444,17 @@
 .personal-section{margin-top:25px}.sent-gifts{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:12px -20px 0;padding:2px 20px 5px}.sent-gifts::-webkit-scrollbar{display:none}.sent-gift{flex:0 0 145px;min-height:110px;padding:15px;border:1px solid rgba(74,47,39,.055);border-radius:20px;background:var(--gift-bg,#fff);text-align:left;color:#4A2F27;box-shadow:0 7px 18px rgba(93,54,38,.045)}.sent-gift span{display:block;color:rgba(74,47,39,.52);font-size:11px}.sent-gift b{display:block;margin:16px 0 7px;font-size:15px;line-height:1.35}.sent-gift small{color:rgba(74,47,39,.48);font-size:11px}
 .pro-card{width:100%;min-height:86px;margin-top:25px;display:flex;align-items:center;justify-content:space-between;text-align:left;padding:17px 18px;border:1px solid rgba(228,119,79,.08);border-radius:22px;background:linear-gradient(120deg,#FBE4D2,#FFFDF9);color:#4A2F27}.pro-card p{font-family:Georgia,serif;font-size:19px;font-weight:700}.pro-card span{display:block;margin-top:5px;color:rgba(74,47,39,.52);font-size:11px}.pro-card b{color:#D36E4A;font-size:11px;white-space:nowrap}
 .settings-group{overflow:hidden;margin-top:12px;border-radius:22px;background:rgba(255,255,255,.8);border:1px solid rgba(74,47,39,.045)}.settings-group button{width:100%;height:52px;display:grid;grid-template-columns:31px 1fr 16px;align-items:center;border:0;border-bottom:1px solid rgba(74,47,39,.055);background:transparent;padding:0 15px;color:#4A2F27;text-align:left}.settings-group button:last-child{border-bottom:0}.settings-group i{width:25px;height:25px;border-radius:8px;display:grid;place-items:center;background:#FFF3EA;color:#D97653;font-style:normal;font-size:13px}.settings-group span{font-size:14px}.settings-group b{color:rgba(74,47,39,.28);font-size:20px;font-weight:400}
-.personal-ending{position:relative;height:154px;overflow:hidden;margin-top:27px;border-radius:24px;background:#F7EBDC}.personal-ending img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:70% 62%;opacity:.66}.personal-ending:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,249,242,.98) 0%,rgba(255,249,242,.8) 50%,rgba(255,249,242,.15) 78%)}.personal-ending p{position:absolute;z-index:2;left:18px;top:38px;width:58%;font-family:Georgia,"Songti SC",serif;color:#4A2F27;font-size:16px;line-height:1.65}.personal-reset{display:block;margin:17px auto 0;border:0;background:transparent;color:rgba(74,47,39,.36);font-size:11px;padding:8px}</style>
+.personal-ending{position:relative;height:154px;overflow:hidden;margin-top:27px;border-radius:24px;background:#F7EBDC}.personal-ending img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:70% 62%;opacity:.66}.personal-ending:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,249,242,.98) 0%,rgba(255,249,242,.8) 50%,rgba(255,249,242,.15) 78%)}.personal-ending p{position:absolute;z-index:2;left:18px;top:38px;width:58%;font-family:Georgia,"Songti SC",serif;color:#4A2F27;font-size:16px;line-height:1.65}.personal-reset{display:block;margin:17px auto 0;border:0;background:transparent;color:rgba(74,47,39,.36);font-size:11px;padding:8px}/* Personal identity card refinement */
+.personal-scroll{padding-top:0}
+.personal-identity-card{position:relative;margin:0 -20px 0;width:calc(100% + 40px);min-height:190px;padding:48px 22px 27px;border-radius:0 0 30px 30px;background:linear-gradient(145deg,#FBE4D2 0%,#FFF5EA 62%,#FFF9F2 100%);overflow:hidden}
+.personal-identity-card:after{content:"";position:absolute;right:-46px;bottom:-72px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(241,201,139,.35),rgba(241,201,139,0) 68%);pointer-events:none}
+.personal-identity-card .profile-hero{position:relative;z-index:2;display:flex;align-items:center;gap:17px;margin:0;text-align:left}
+.personal-identity-card .profile-hero .avatar{flex:none;width:82px;height:96px;border-radius:41px 41px 29px 29px;background:linear-gradient(180deg,#EBA183,#E4774F);color:#fff;border:5px solid rgba(255,255,255,.66);box-shadow:0 12px 26px rgba(126,73,48,.13);font-family:Georgia,serif;font-size:30px}
+.personal-identity-card .profile-hero h1{font-family:Georgia,"Songti SC",serif;margin-top:5px;color:#4A2F27;font-size:30px;line-height:1.05}
+.personal-identity-card .profile-hero p:not(.eyebrow){margin-top:8px;color:rgba(74,47,39,.62);font-size:13px}
+.personal-identity-card .self-traits{display:inline-block;margin-top:13px;padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.52);color:#A26048;font-size:10px}
+.personal-identity-card .personal-settings{position:absolute;z-index:4;right:18px;top:18px;width:36px;height:36px;border:1px solid rgba(74,47,39,.055);border-radius:13px;background:rgba(255,255,255,.62);backdrop-filter:blur(10px);color:#7B594D}
+.personal-stats{margin-top:25px}</style>
 </head>
 <body>
 <main class="device" id="app">
@@ -534,11 +544,11 @@
 </section>
   <section class="screen personal-screen" data-screen="profile">
   <div class="scroll with-nav personal-scroll">
-    <header class="personal-header"><div class="profile-hero"><span class="avatar lg">满</span><div><p class="eyebrow">MY GIFTLOOP</p><h1>小满</h1><p>把重要的人，认真放在心上。</p></div></div><button class="personal-settings" data-toast="设置入口已准备好" aria-label="设置">⚙</button></header>
+    <header class="personal-identity-card"><button class="personal-settings" data-toast="设置入口已准备好" aria-label="设置">⚙</button><div class="profile-hero"><span class="avatar lg">满</span><div><p class="eyebrow">MY GIFTLOOP</p><h1>小满</h1><p>把重要的人，认真放在心上。</p><span class="self-traits">温柔派 · 仪式感 · 重心意</span></div></div></header>
     <section class="personal-stats" id="personalStats"></section>
     <button class="relation-archive" data-go="island"><div><p class="eyebrow">RELATION ARCHIVE</p><h2>我的关系档案</h2><span>看看你记住了哪些人和小事</span></div><img src="giftloop-home-relation-v2.png" alt="" aria-hidden="true"><i>→</i></button>
     <section class="personal-section"><div class="section-head"><h3 class="section-title">送出去的心意</h3><button class="link" data-go="records">全部 →</button></div><div class="sent-gifts" id="personalGifts"></div></section>
-    <button class="pro-card" data-toast="GiftLoop Pro 还在准备中"><div><p>GiftLoop Pro</p><span>解锁更多关系与心意功能</span></div><b>了解更多 →</b></button>
+
     <section class="personal-section"><div class="section-head"><h3 class="section-title">设置</h3></div><div class="settings-group">
       <button data-toast="提醒设置"><i>◷</i><span>提醒设置</span><b>›</b></button>
       <button data-toast="礼物偏好"><i>♡</i><span>礼物偏好</span><b>›</b></button>
