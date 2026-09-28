@@ -638,7 +638,7 @@
   const recordPhotos={'小林|最近搬家了':'giftloop-record-moving-home.png','阿宁|最近开始学潜水':'giftloop-record-diving.png','米米|发现了一家很喜欢的咖啡店':'giftloop-record-cafe.png'};
   state.notes=state.notes.map(note=>({...note,photo:note.photo||recordPhotos[note.friend+'|'+note.event]||null}));
   const extraPhotoNotes=[{friend:'小林',event:'在做一本纪念相册',detail:'把一起经历的小瞬间慢慢整理成册',date:'8月25日',tags:['手作','纪念'],photo:'giftloop-record-memory-album.png'},{friend:'小林',event:'准备了一份咖啡心意礼盒',detail:'她喜欢咖啡，也会喜欢这种温暖又实用的心意',date:'8月28日',tags:['咖啡','礼物灵感'],photo:'giftloop-record-coffee-gift.png'}];
-  extraPhotoNotes.forEach(note=>{if(!state.notes.some(item=>item.friend===note.friend&&item.event===note.event))state.notes.push(note)});
+  extraPhotoNotes.slice().reverse().forEach(note=>{if(!state.notes.some(item=>item.friend===note.friend&&item.event===note.event))state.notes.unshift(note)});
   const screens=[...document.querySelectorAll('.screen')];
   const current=()=>document.querySelector('.screen.active')?.dataset.screen;
   function show(name,push=true){const old=current();if(old&&old!==name&&push)state.stack.push(old);screens.forEach(s=>s.classList.toggle('active',s.dataset.screen===name));document.querySelectorAll('[data-selected-name]').forEach(x=>x.textContent=state.selected?.name||'小林');renderAll();}
@@ -680,6 +680,7 @@
 </script>
 </body>
 </html>
+
 
 
 
