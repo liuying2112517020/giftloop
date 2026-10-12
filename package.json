@@ -5,7 +5,8 @@
   "description": "GiftLoop static demo with a minimal DashScope recommendation API",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test:e2e": "node tests/reliability.e2e.cjs"
   },
   "engines": {
     "node": ">=18"
@@ -13,5 +14,8 @@
   "dependencies": {
     "dotenv": "^16.4.7",
     "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.64.0"
   }
 }

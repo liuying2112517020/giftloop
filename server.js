@@ -169,17 +169,25 @@ app.post('/api/gift-recommend', async (req, res) => {
 必须先淘汰违反预算上限、明确排除、过敏禁忌或历史重复的候选；再按送礼期待和礼物类型偏好排序。推荐理由必须明确关联以上资料中的具体信息。不要说“未知信息”或用通用礼物清单敷衍。请返回 3 个彼此明显不同的方向，而不是同类商品的简单替换，并严格使用 system prompt 指定的 JSON 结构。`;
 
   if (process.env.NODE_ENV !== 'production') {
-    console.info('Gift recommendation context', userPayload);
+    console.info('Gift recommendation request', {
+      occasion: userPayload.occasion,
+      interestCount: userPayload.friend.interests.length,
+      memoryCount: userPayload.friend.recentMemories.length,
+      exclusionCount: userPayload.constraints.exclusions.length
+    });
   }
 
   try {
     const endpoint = `${String(baseUrl).replace(/\/$/, '')}/chat/completions`;
+    const providerController = new AbortController();
+    const providerTimeout = setTimeout(() => providerController.abort(), 75000);
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       },
+      signal: providerController.signal,
       body: JSON.stringify({
         model,
         messages: [
@@ -189,7 +197,7 @@ app.post('/api/gift-recommend', async (req, res) => {
         temperature: 0.7,
         response_format: { type: 'json_object' }
       })
-    });
+    }).finally(() => clearTimeout(providerTimeout));
 
     if (!response.ok) {
       const providerRequestId = response.headers.get('x-request-id');
@@ -224,6 +232,12 @@ app.post('/api/gift-recommend', async (req, res) => {
       }))
     });
   } catch (error) {
+    if (error && error.name === 'AbortError') {
+      return res.status(504).json({
+        error: 'AI_PROVIDER_TIMEOUT',
+        message: 'AI 服务响应时间较长，请重新生成。'
+      });
+    }
     console.error('Gift recommendation failed', { message: error.message });
     return res.status(502).json({
       error: 'INVALID_AI_RESPONSE',
