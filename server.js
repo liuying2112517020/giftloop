@@ -7,9 +7,38 @@ dotenv.config({ path: path.join(__dirname, '.env.local') });
 const app = express();
 const port = Number(process.env.PORT) || 3000;
 const distDir = path.join(__dirname, 'dist');
+const githubPagesOrigin = 'https://liuying2112517020.github.io';
 
 app.disable('x-powered-by');
+app.set('trust proxy', 1);
 app.use(express.json({ limit: '100kb' }));
+
+app.use('/api/gift-recommend', (req, res, next) => {
+  const origin = req.get('origin');
+  const forwardedProto = String(req.get('x-forwarded-proto') || req.protocol).split(',')[0].trim();
+  const requestOrigin = `${forwardedProto}://${req.get('host')}`;
+
+  if (!origin || origin === requestOrigin) {
+    if (req.method === 'OPTIONS') return res.sendStatus(204);
+    return next();
+  }
+
+  if (origin !== githubPagesOrigin) {
+    return res.status(403).json({
+      error: 'CORS_ORIGIN_DENIED',
+      message: '该来源不允许调用 GiftLoop 推荐服务。'
+    });
+  }
+
+  res.setHeader('Access-Control-Allow-Origin', githubPagesOrigin);
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Max-Age', '86400');
+  res.vary('Origin');
+
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  return next();
+});
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true });
@@ -27,7 +56,7 @@ app.post('/api/gift-recommend', async (req, res) => {
     });
   }
 
-  const { friend, occasion, budget, extraNote = '' } = req.body || {};
+  const { friend, occasion, budget, preferences = {}, constraints = {}, extraNote = '' } = req.body || {};
   if (!friend || typeof friend !== 'object' || !friend.name || !occasion || !budget) {
     return res.status(400).json({
       error: 'INVALID_REQUEST',
@@ -47,10 +76,10 @@ app.post('/api/gift-recommend', async (req, res) => {
 - 历史礼物
 - 用户补充说明
 
-用户补充说明中可能包含“本次最在意”“礼物形式偏好”“明确排除”“其他排除”“其他必须考虑”：
-- “明确排除”和“其他排除”是硬约束，推荐中不得出现被排除的方向
-- “礼物形式偏好”应优先满足；未提供时再自由判断
-- “本次最在意”用于比较候选方案并解释推荐理由
+请求中会提供偏好条件和硬性约束：
+- constraints 中的预算上限、明确排除、过敏禁忌和自由补充是硬约束，必须严格遵守
+- preferences 中的送礼期待和礼物类型是推荐优先级，不是强制限制；未提供时自由判断
+- extraNote 中的“其他必须考虑”也要参与判断，其中明确禁忌按硬约束处理
 - 不要重复推荐历史礼物或高度相似的替代品
 
 禁止简单把兴趣直接变成“XX礼盒”。
@@ -108,6 +137,16 @@ app.post('/api/gift-recommend', async (req, res) => {
     },
     occasion: String(occasion).trim(),
     budget: String(budget).trim(),
+    preferences: {
+      expectations: asStringArray(preferences.expectations),
+      giftTypes: asStringArray(preferences.giftTypes)
+    },
+    constraints: {
+      budgetMin: constraints.budgetMin !== null && constraints.budgetMin !== '' && Number.isFinite(Number(constraints.budgetMin)) ? Number(constraints.budgetMin) : null,
+      budgetMax: constraints.budgetMax !== null && constraints.budgetMax !== '' && Number.isFinite(Number(constraints.budgetMax)) ? Number(constraints.budgetMax) : null,
+      exclusions: asStringArray(constraints.exclusions),
+      freeText: String(constraints.freeText || '').trim().slice(0, 500)
+    },
     extraNote: String(extraNote).trim().slice(0, 1000)
   };
 
@@ -121,9 +160,13 @@ app.post('/api/gift-recommend', async (req, res) => {
 过去送过：${formatGiftHistory(userPayload.friend.giftHistory)}
 送礼原因：${userPayload.occasion}
 预算：${userPayload.budget}
+送礼期待（优先满足）：${formatList(userPayload.preferences.expectations, '未选择，由你判断')}
+偏好礼物类型（优先满足）：${formatList(userPayload.preferences.giftTypes, '未选择，不限制类别')}
+硬性排除：${formatList(userPayload.constraints.exclusions, '无')}
+其他硬性禁忌：${userPayload.constraints.freeText || '无'}
 补充：${userPayload.extraNote || '无'}
 
-推荐理由必须明确关联以上资料中的具体信息。不要说“未知信息”或用通用礼物清单敷衍。请返回 3 个彼此不同的方向，并严格使用 system prompt 指定的 JSON 结构。`;
+必须先淘汰违反预算上限、明确排除、过敏禁忌或历史重复的候选；再按送礼期待和礼物类型偏好排序。推荐理由必须明确关联以上资料中的具体信息。不要说“未知信息”或用通用礼物清单敷衍。请返回 3 个彼此明显不同的方向，而不是同类商品的简单替换，并严格使用 system prompt 指定的 JSON 结构。`;
 
   if (process.env.NODE_ENV !== 'production') {
     console.info('Gift recommendation context', userPayload);
