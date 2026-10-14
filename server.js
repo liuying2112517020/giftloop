@@ -13,7 +13,7 @@ app.disable('x-powered-by');
 app.set('trust proxy', 1);
 app.use(express.json({ limit: '100kb' }));
 
-app.use('/api/gift-recommend', (req, res, next) => {
+app.use(['/api/gift-recommend', '/api/memory-signals'], (req, res, next) => {
   const origin = req.get('origin');
   const forwardedProto = String(req.get('x-forwarded-proto') || req.protocol).split(',')[0].trim();
   const requestOrigin = `${forwardedProto}://${req.get('host')}`;
@@ -44,6 +44,76 @@ app.get('/api/health', (_req, res) => {
   res.json({ ok: true });
 });
 
+app.post('/api/memory-signals', async (req, res) => {
+  const apiKey = process.env.DASHSCOPE_API_KEY;
+  const baseUrl = process.env.DASHSCOPE_BASE_URL;
+  const model = process.env.QWEN_MODEL;
+
+  if (!apiKey || !baseUrl || !model) {
+    return res.status(503).json({
+      error: 'AI_SERVICE_NOT_CONFIGURED',
+      message: '记录理解服务尚未配置完整。'
+    });
+  }
+
+  const friendName = String(req.body?.friend?.name || '').trim().slice(0, 80);
+  const title = String(req.body?.record?.title || '').trim().slice(0, 300);
+  const detail = String(req.body?.record?.detail || '').trim().slice(0, 1500);
+  const tags = asStringArray(req.body?.record?.tags).slice(0, 8);
+
+  if (!friendName || (!title && !detail)) {
+    return res.status(400).json({
+      error: 'INVALID_REQUEST',
+      message: '请提供朋友和记录内容。'
+    });
+  }
+
+  const systemPrompt = `你是 GiftLoop 的日常记录理解助手。分析一条关于朋友的日常记录，只提取未来可能影响理解朋友或送礼决策的信息。
+
+只允许以下三类：
+- interest_preference：明确表达的兴趣或偏好
+- recent_need：明确提到的近期需求、计划或变化
+- dislike：明确表达的避雷或不喜欢
+
+规则：
+- 不提取普通流水账
+- 不推测没有明确表达的信息
+- 不把记录标题机械改写成信号
+- 最多返回 3 条，内容简短、自然、可独立理解
+- 没有值得保存的信息时返回空数组
+- 只返回合法 JSON，不使用 Markdown 代码块
+
+返回结构：
+{"signals":[{"type":"interest_preference|recent_need|dislike","content":"简短信号"}]}`;
+
+  const userPrompt = `朋友：${friendName}\n记录标题：${title || '无'}\n记录内容：${detail || '无'}\n记录标签：${formatList(tags, '无')}\n\n请严格按指定 JSON 结构返回。`;
+
+  try {
+    const result = await requestDashScopeJson({
+      apiKey,
+      baseUrl,
+      model,
+      systemPrompt,
+      userPrompt,
+      temperature: 0.2,
+      timeoutMs: 90000
+    });
+    return res.json({ signals: normalizeRecentSignals(result?.signals) });
+  } catch (error) {
+    if (error && error.name === 'AbortError') {
+      return res.status(504).json({
+        error: 'AI_PROVIDER_TIMEOUT',
+        message: '记录已保存，AI 暂时没有完成理解。'
+      });
+    }
+    console.error('Memory signal extraction failed', { message: error.message });
+    return res.status(502).json({
+      error: 'MEMORY_SIGNAL_ERROR',
+      message: '记录已保存，AI 暂时没有完成理解。'
+    });
+  }
+});
+
 app.post('/api/gift-recommend', async (req, res) => {
   const apiKey = process.env.DASHSCOPE_API_KEY;
   const baseUrl = process.env.DASHSCOPE_BASE_URL;
@@ -70,6 +140,7 @@ app.post('/api/gift-recommend', async (req, res) => {
 - 朋友性格
 - 兴趣爱好
 - 最近记录
+- 从最近记录提取的 Recent Signals
 - 与用户的关系
 - 送礼原因
 - 预算
@@ -78,6 +149,7 @@ app.post('/api/gift-recommend', async (req, res) => {
 
 请求中会提供偏好条件和硬性约束：
 - constraints 中的预算上限、明确排除、过敏禁忌和自由补充是硬约束，必须严格遵守
+- Recent Signals 中 type=dislike 的明确避雷同样是硬约束
 - preferences 中的送礼期待和礼物类型是推荐优先级，不是强制限制；未提供时自由判断
 - extraNote 中的“其他必须考虑”也要参与判断，其中明确禁忌按硬约束处理
 - 不要重复推荐历史礼物或高度相似的替代品
@@ -137,6 +209,7 @@ app.post('/api/gift-recommend', async (req, res) => {
       personality: asStringArray(friend.personality),
       interests: asStringArray(friend.interests),
       recentMemories: asStringArray(friend.recentMemories),
+      recentSignals: normalizeInputSignals(friend.recentSignals),
       giftHistory: normalizeGiftHistory(friend.giftHistory),
       giftPreferences: asStringArray(friend.giftPreferences),
       giftAvoidances: asStringArray(friend.giftAvoidances),
@@ -164,6 +237,7 @@ app.post('/api/gift-recommend', async (req, res) => {
 性格：${formatList(userPayload.friend.personality, '未填写')}
 兴趣：${formatList(userPayload.friend.interests, '未填写')}
 最近发生：${formatList(userPayload.friend.recentMemories, '暂无')}
+Recent Signals：${formatRecentSignals(userPayload.friend.recentSignals)}
 过去送过：${formatGiftHistory(userPayload.friend.giftHistory)}
 长期送礼偏好：${formatList(userPayload.friend.giftPreferences, '未填写')}
 长期避雷：${formatList(userPayload.friend.giftAvoidances, '无')}
@@ -176,54 +250,28 @@ app.post('/api/gift-recommend', async (req, res) => {
 其他硬性禁忌：${userPayload.constraints.freeText || '无'}
 补充：${userPayload.extraNote || '无'}
 
-必须先淘汰违反预算上限、明确排除、长期避雷、过敏禁忌或历史重复的候选；再按送礼期待和礼物类型偏好排序。推荐理由必须明确关联以上资料中的具体信息。evidence.reference 必须逐字摘自上面真实提供的资料或本次要求，不得编造；没有可靠依据时 evidence 返回空数组。每个方向给出 2–3 个不带虚构品牌的具体商品类型/规格参考及 2–4 条实用挑选建议。请返回 3 个彼此明显不同的方向，而不是同类商品的简单替换，并严格使用 system prompt 指定的 JSON 结构。`;
+必须先淘汰违反预算上限、明确排除、长期避雷、Recent Signals 中 dislike、过敏禁忌或历史重复的候选；再按送礼期待和礼物类型偏好排序。Recent Signals 是从近期日常记录中提取的明确线索，应与长期资料和本次要求共同使用；相关时可以自然引用，但不要让全部推荐机械围绕同一条线索。推荐理由必须明确关联以上资料中的具体信息。evidence.reference 必须逐字摘自上面真实提供的资料或本次要求，不得编造；Recent Signals 的依据来源使用 memory；没有可靠依据时 evidence 返回空数组。每个方向给出 2–3 个不带虚构品牌的具体商品类型/规格参考及 2–4 条实用挑选建议。请返回 3 个彼此明显不同的方向，而不是同类商品的简单替换，并严格使用 system prompt 指定的 JSON 结构。`;
 
   if (process.env.NODE_ENV !== 'production') {
     console.info('Gift recommendation request', {
       occasion: userPayload.occasion,
       interestCount: userPayload.friend.interests.length,
       memoryCount: userPayload.friend.recentMemories.length,
+      signalCount: userPayload.friend.recentSignals.length,
       exclusionCount: userPayload.constraints.exclusions.length
     });
   }
 
   try {
-    const endpoint = `${String(baseUrl).replace(/\/$/, '')}/chat/completions`;
-    const providerController = new AbortController();
-    const providerTimeout = setTimeout(() => providerController.abort(), 90000);
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      signal: providerController.signal,
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        temperature: 0.7,
-        response_format: { type: 'json_object' }
-      })
-    }).finally(() => clearTimeout(providerTimeout));
-
-    if (!response.ok) {
-      const providerRequestId = response.headers.get('x-request-id');
-      console.error('DashScope request failed', {
-        status: response.status,
-        requestId: providerRequestId || undefined
-      });
-      return res.status(502).json({
-        error: 'AI_PROVIDER_ERROR',
-        message: '礼物推荐服务暂时不可用，请稍后重试。'
-      });
-    }
-
-    const completion = await response.json();
-    const content = completion?.choices?.[0]?.message?.content;
-    const result = parseModelJson(content);
+    const result = await requestDashScopeJson({
+      apiKey,
+      baseUrl,
+      model,
+      systemPrompt,
+      userPrompt,
+      temperature: 0.7,
+      timeoutMs: 90000
+    });
 
     if (!isValidRecommendationResult(result)) {
       throw new Error('Model returned an unexpected JSON structure');
@@ -305,6 +353,18 @@ function normalizeGiftHistory(value) {
   }).filter(Boolean);
 }
 
+function normalizeInputSignals(value) {
+  if (!Array.isArray(value)) return [];
+  const allowedTypes = new Set(['interest_preference', 'recent_need', 'dislike']);
+  return value.map(item => {
+    if (!item || typeof item !== 'object') return null;
+    const type = String(item.type || '').trim();
+    const content = String(item.content || '').trim().replace(/\s+/g, ' ').slice(0, 100);
+    if (!allowedTypes.has(type) || !content) return null;
+    return { type, content };
+  }).filter(Boolean).slice(0, 8);
+}
+
 function normalizeEvidence(value) {
   if (!Array.isArray(value)) return [];
   const allowedSources = new Set(['profile', 'memory', 'history', 'request']);
@@ -344,6 +404,10 @@ function formatGiftHistory(value) {
   return value.length ? value.join('；') : '暂无';
 }
 
+function formatRecentSignals(value) {
+  return value.length ? value.map(item => `${item.type}：${item.content}`).join('；') : '暂无';
+}
+
 function normalizeImageKey(value) {
   const allowed = new Set(['home', 'drink', 'memory', 'plant', 'fashion', 'tech', 'art', 'sport', 'hobby', 'experience']);
   const key = String(value || '').trim().toLowerCase();
@@ -365,6 +429,56 @@ function parseModelJson(content) {
       .trim();
     return JSON.parse(withoutFence);
   }
+}
+
+async function requestDashScopeJson({ apiKey, baseUrl, model, systemPrompt, userPrompt, temperature, timeoutMs }) {
+  const endpoint = `${String(baseUrl).replace(/\/$/, '')}/chat/completions`;
+  const providerController = new AbortController();
+  const providerTimeout = setTimeout(() => providerController.abort(), timeoutMs);
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    signal: providerController.signal,
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      temperature,
+      response_format: { type: 'json_object' }
+    })
+  }).finally(() => clearTimeout(providerTimeout));
+
+  if (!response.ok) {
+    const providerRequestId = response.headers.get('x-request-id');
+    console.error('DashScope request failed', {
+      status: response.status,
+      requestId: providerRequestId || undefined
+    });
+    throw new Error(`DashScope request failed with status ${response.status}`);
+  }
+
+  const completion = await response.json();
+  return parseModelJson(completion?.choices?.[0]?.message?.content);
+}
+
+function normalizeRecentSignals(value) {
+  if (!Array.isArray(value)) return [];
+  const allowedTypes = new Set(['interest_preference', 'recent_need', 'dislike']);
+  const seen = new Set();
+  return value.map(item => {
+    if (!item || typeof item !== 'object') return null;
+    const type = String(item.type || '').trim();
+    const content = String(item.content || '').trim().replace(/\s+/g, ' ').slice(0, 100);
+    const fingerprint = `${type}|${content}`.toLowerCase();
+    if (!allowedTypes.has(type) || content.length < 2 || seen.has(fingerprint)) return null;
+    seen.add(fingerprint);
+    return { type, content };
+  }).filter(Boolean).slice(0, 3);
 }
 
 function isValidRecommendationResult(value) {

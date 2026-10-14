@@ -26,6 +26,7 @@ const userData = () => ({
 async function withPage(browser, viewport, setup, test) {
   const context = await browser.newContext({ viewport });
   const page = await context.newPage();
+  await page.route('**/api/memory-signals', route => route.fulfill({ status: 200, contentType: 'application/json', body: '{"signals":[]}' }));
   await page.addInitScript(data => {
     if (localStorage.getItem('giftloop_test_seeded') === '1') return;
     localStorage.setItem('giftloop_mode', 'user');
@@ -40,6 +41,7 @@ async function withPage(browser, viewport, setup, test) {
 async function withSeededPage(browser, viewport, data, setup, test) {
   const context = await browser.newContext({ viewport });
   const page = await context.newPage();
+  await page.route('**/api/memory-signals', route => route.fulfill({ status: 200, contentType: 'application/json', body: '{"signals":[]}' }));
   await page.addInitScript(seed => {
     localStorage.setItem('giftloop_mode', 'user');
     localStorage.setItem('giftloop_user_data', JSON.stringify(seed));
@@ -96,6 +98,7 @@ async function run(name, fn) {
 async function freshPage(browser, viewport, test, setup) {
   const context = await browser.newContext({ viewport });
   const page = await context.newPage();
+  await page.route('**/api/memory-signals', route => route.fulfill({ status: 200, contentType: 'application/json', body: '{"signals":[]}' }));
   if (setup) await setup(page);
   await page.goto(baseURL, { waitUntil: 'domcontentloaded' });
   try { await test(page, context); } finally { await context.close(); }
