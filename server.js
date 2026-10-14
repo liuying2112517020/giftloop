@@ -7,7 +7,10 @@ dotenv.config({ path: path.join(__dirname, '.env.local') });
 const app = express();
 const port = Number(process.env.PORT) || 3000;
 const distDir = path.join(__dirname, 'dist');
-const githubPagesOrigin = 'https://liuying2112517020.github.io';
+const allowedFrontendOrigins = new Set([
+  'https://liuying2112517020.github.io',
+  'https://giftloop-web.vercel.app'
+]);
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
@@ -23,14 +26,14 @@ app.use(['/api/gift-recommend', '/api/memory-signals'], (req, res, next) => {
     return next();
   }
 
-  if (origin !== githubPagesOrigin) {
+  if (!allowedFrontendOrigins.has(origin)) {
     return res.status(403).json({
       error: 'CORS_ORIGIN_DENIED',
       message: '该来源不允许调用 GiftLoop 推荐服务。'
     });
   }
 
-  res.setHeader('Access-Control-Allow-Origin', githubPagesOrigin);
+  res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   res.setHeader('Access-Control-Max-Age', '86400');
