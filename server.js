@@ -104,7 +104,7 @@ app.post('/api/gift-recommend', async (req, res) => {
 2. 一个偏纪念意义
 3. 一个偏体验或兴趣延伸
 
-允许推荐真实存在的品牌，但不要编造不存在的品牌、产品、实时价格或促销。
+当前没有接入实时商品数据库。除非输入中已经提供了可核验的商品资料，否则不要输出品牌、型号、购买链接、库存、评分或实时价格。具体商品参考应写成可购买的类型/规格建议，并明确是参考价格。
 
 每个 reason 必须结合朋友的具体信息解释为什么适合 TA。必须引用用户提供的具体信息进行判断，不允许使用“未知信息”“信息不足”或类似表述；没有历史礼物时，按“暂无”处理。
 
@@ -117,9 +117,13 @@ app.post('/api/gift-recommend', async (req, res) => {
     {
       "title": "礼物名称",
       "category": "给用户看的礼物方向，例如居家生活、纪念定制、兴趣体验",
+      "directionType": "具体方向类型，例如兴趣延伸、情感纪念、共同体验",
       "imageKey": "home|drink|memory|plant|fashion|tech|art|sport|hobby|experience 之一",
       "reason": "一句话核心理由，控制在55个中文字符以内",
       "details": ["结合朋友具体资料的理由1", "理由2", "理由3"],
+      "evidence": [{"source":"profile|memory|history|request", "reference":"请求里实际出现的原文片段", "text":"这条资料如何影响推荐"}],
+      "selectionTips": ["具体、可执行的挑选建议1", "建议2"],
+      "products": [{"name":"具体商品类型或规格建议", "price":"参考价格区间", "reason":"为什么符合本次条件", "features":["核心特点","适用条件"], "verified":false}],
       "budget": "价格区间",
       "tags": ["标签1", "标签2", "标签3"]
     }
@@ -133,7 +137,10 @@ app.post('/api/gift-recommend', async (req, res) => {
       personality: asStringArray(friend.personality),
       interests: asStringArray(friend.interests),
       recentMemories: asStringArray(friend.recentMemories),
-      giftHistory: normalizeGiftHistory(friend.giftHistory)
+      giftHistory: normalizeGiftHistory(friend.giftHistory),
+      giftPreferences: asStringArray(friend.giftPreferences),
+      giftAvoidances: asStringArray(friend.giftAvoidances),
+      notes: String(friend.notes || '').trim().slice(0, 500)
     },
     occasion: String(occasion).trim(),
     budget: String(budget).trim(),
@@ -158,6 +165,9 @@ app.post('/api/gift-recommend', async (req, res) => {
 兴趣：${formatList(userPayload.friend.interests, '未填写')}
 最近发生：${formatList(userPayload.friend.recentMemories, '暂无')}
 过去送过：${formatGiftHistory(userPayload.friend.giftHistory)}
+长期送礼偏好：${formatList(userPayload.friend.giftPreferences, '未填写')}
+长期避雷：${formatList(userPayload.friend.giftAvoidances, '无')}
+其他长期信息：${userPayload.friend.notes || '无'}
 送礼原因：${userPayload.occasion}
 预算：${userPayload.budget}
 送礼期待（优先满足）：${formatList(userPayload.preferences.expectations, '未选择，由你判断')}
@@ -166,7 +176,7 @@ app.post('/api/gift-recommend', async (req, res) => {
 其他硬性禁忌：${userPayload.constraints.freeText || '无'}
 补充：${userPayload.extraNote || '无'}
 
-必须先淘汰违反预算上限、明确排除、过敏禁忌或历史重复的候选；再按送礼期待和礼物类型偏好排序。推荐理由必须明确关联以上资料中的具体信息。不要说“未知信息”或用通用礼物清单敷衍。请返回 3 个彼此明显不同的方向，而不是同类商品的简单替换，并严格使用 system prompt 指定的 JSON 结构。`;
+必须先淘汰违反预算上限、明确排除、长期避雷、过敏禁忌或历史重复的候选；再按送礼期待和礼物类型偏好排序。推荐理由必须明确关联以上资料中的具体信息。evidence.reference 必须逐字摘自上面真实提供的资料或本次要求，不得编造；没有可靠依据时 evidence 返回空数组。每个方向给出 2–3 个不带虚构品牌的具体商品类型/规格参考及 2–4 条实用挑选建议。请返回 3 个彼此明显不同的方向，而不是同类商品的简单替换，并严格使用 system prompt 指定的 JSON 结构。`;
 
   if (process.env.NODE_ENV !== 'production') {
     console.info('Gift recommendation request', {
@@ -180,7 +190,7 @@ app.post('/api/gift-recommend', async (req, res) => {
   try {
     const endpoint = `${String(baseUrl).replace(/\/$/, '')}/chat/completions`;
     const providerController = new AbortController();
-    const providerTimeout = setTimeout(() => providerController.abort(), 75000);
+    const providerTimeout = setTimeout(() => providerController.abort(), 90000);
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -225,8 +235,12 @@ app.post('/api/gift-recommend', async (req, res) => {
         title: String(item.title),
         category: String(item.category),
         imageKey: normalizeImageKey(item.imageKey),
+        directionType: String(item.directionType || item.category || ''),
         reason: String(item.reason),
         details: asStringArray(item.details).slice(0, 4),
+        evidence: normalizeEvidence(item.evidence).slice(0, 4),
+        selectionTips: asStringArray(item.selectionTips).slice(0, 4),
+        products: normalizeProductExamples(item.products).slice(0, 3),
         budget: String(item.budget),
         tags: asStringArray(item.tags).slice(0, 3)
       }))
@@ -288,6 +302,37 @@ function normalizeGiftHistory(value) {
       .filter(Boolean)
       .map(part => String(part).trim())
       .join(' · ');
+  }).filter(Boolean);
+}
+
+function normalizeEvidence(value) {
+  if (!Array.isArray(value)) return [];
+  const allowedSources = new Set(['profile', 'memory', 'history', 'request']);
+  return value.map(item => {
+    if (!item || typeof item !== 'object') return null;
+    const source = String(item.source || '').trim().toLowerCase();
+    const reference = String(item.reference || '').trim().slice(0, 160);
+    const text = String(item.text || '').trim().slice(0, 220);
+    if (!allowedSources.has(source) || !reference || !text) return null;
+    return { source, reference, text };
+  }).filter(Boolean);
+}
+
+function normalizeProductExamples(value) {
+  if (!Array.isArray(value)) return [];
+  return value.map(item => {
+    if (!item || typeof item !== 'object') return null;
+    const name = String(item.name || '').trim().slice(0, 100);
+    const price = String(item.price || '').trim().slice(0, 60);
+    const reason = String(item.reason || '').trim().slice(0, 220);
+    if (!name || !reason) return null;
+    return {
+      name,
+      price,
+      reason,
+      features: asStringArray(item.features).slice(0, 4),
+      verified: item.verified === true
+    };
   }).filter(Boolean);
 }
 
