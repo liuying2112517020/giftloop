@@ -527,7 +527,7 @@
 <style>.self-person:has(.profile-own-avatar){display:grid;place-items:center;background:transparent}.self-person .profile-own-avatar,.self-person .profile-own-avatar img{display:block;width:100%;height:100%;object-fit:contain}.onboard .shared-profile-form{gap:14px;padding:17px 18px}.onboard .shared-avatar-stage{min-height:118px}.onboard .shared-avatar-stage img{width:82px;height:108px}.onboard .shared-avatar-option{padding:5px 2px}.onboard .shared-avatar-option img{width:37px;height:50px}.onboard .shared-avatar-option span{font-size:8px}.first-friend-skip{color:#D66F4B!important}</style>
 <style id="giftloop-progressive-onboarding-v1">
 [data-screen="onboard"] .onboard-intro{min-height:118px}
-[data-screen="onboard"] .onboard-intro img{width:104px;height:88px;object-fit:cover;object-position:68% center;border-radius:18px;order:2}
+[data-screen="onboard"] .onboard-intro>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:68% 56%;border-radius:0;pointer-events:none}
 [data-screen="onboard"] .onboard-copy{flex:1;min-width:0}.onboard-copy .display{font-size:20px!important}.onboard-copy .sub{font-size:11px!important}
 .onboard-name-module .input{height:48px;font-size:14px}.onboard-module-head h3 small{color:rgba(74,47,39,.42);font-size:10px;font-weight:500}
 .onboard-personalize-toggle{width:100%;min-height:59px;display:flex;align-items:center;justify-content:space-between;padding:0 15px;border:1px solid rgba(74,47,39,.06);border-radius:18px;background:rgba(255,255,255,.62);color:#4A2F27;text-align:left}
@@ -540,7 +540,7 @@
 .first-friend-more-toggle{width:100%;height:44px;margin-top:18px;display:flex;align-items:center;justify-content:space-between;padding:0 13px;border:1px solid rgba(228,119,79,.12);border-radius:14px;background:#FFF9F3;color:#B86142;font-size:11px;font-weight:700}
 .first-friend-more{margin-top:16px;padding-top:2px;border-top:1px solid rgba(74,47,39,.055)}.first-friend-more textarea{min-height:78px}
 .house-profile-hint{display:flex;align-items:center;gap:10px;margin:10px 16px 0;padding:10px 12px;border:1px solid rgba(184,198,165,.22);border-radius:14px;background:#F1F4EC;color:#627056;font-size:9.5px;line-height:1.45}.house-profile-hint span{flex:1}.house-profile-hint button{flex:none;width:24px;height:24px;border:0;border-radius:50%;background:rgba(255,255,255,.72);color:#7A876F}
-@media(max-height:700px){[data-screen="onboard"] .onboard-intro{min-height:96px;padding:12px 14px}[data-screen="onboard"] .onboard-intro img{width:82px;height:70px}.onboard-copy .display{font-size:18px!important}.onboard-profile-grid{gap:9px}.onboard-module{padding:12px 14px}.onboard-personalize-toggle{min-height:54px}}
+@media(max-height:700px){[data-screen="onboard"] .onboard-intro{min-height:96px;padding:12px 14px}.onboard-copy .display{font-size:18px!important}.onboard-profile-grid{gap:9px}.onboard-module{padding:12px 14px}.onboard-personalize-toggle{min-height:54px}}
 </style>
 </head>
 <style>
@@ -754,7 +754,7 @@
   const demoGiftRecords=[{friend:'小林',year:'2025',occasion:'毕业',gift:'手工相册'},{friend:'小林',year:'2026',occasion:'生日',gift:'咖啡礼盒'}];
   const demoData={profile:demoProfile,friends:baseFriends,memories:demoMemories,giftRecords:demoGiftRecords,recentSignals:[]};
   const emptyProfile=()=>({nickname:'',name:'',mbti:'',personalityColor:'',personalityTags:[],traits:[],interests:[],gender:'',avatarStyle:'',bio:''});
-  const emptyUserData=()=>({profile:emptyProfile(),friends:[],memories:[],giftRecords:[],recentSignals:[],onboarding:{profileCompleted:false,firstFriendCompleted:false}});
+  const emptyUserData=()=>({profile:emptyProfile(),friends:[],memories:[],giftRecords:[],recentSignals:[],onboarding:{profileCompleted:false,firstFriendCompleted:false,firstFriendGuideSeen:false}});
   const cloneData=value=>JSON.parse(JSON.stringify(value));
   const DEMO_FRIEND_IDS=new Set(baseFriends.map(friend=>friend.id));
   const demoFriendFingerprints=baseFriends.map(friend=>({name:friend.name,birthday:friend.birthday||'',mbti:friend.mbti||'',notes:friend.notes||'',interests:[...(friend.interests||[])].sort().join('|')}));
@@ -762,7 +762,7 @@
   const sameDemoMemory=memory=>demoMemories.some(item=>item.friend===memory?.friend&&item.event===memory?.event&&item.date===memory?.date);
   const sameDemoGift=record=>demoGiftRecords.some(item=>item.friend===record?.friend&&item.gift===record?.gift&&item.occasion===record?.occasion&&String(item.year)===String(record?.year));
   const sameDemoProfile=profile=>profile&&profile.name===demoProfile.name&&profile.mbti===demoProfile.mbti&&JSON.stringify(profile.interests||[])===JSON.stringify(demoProfile.interests);
-  const sanitizeUserData=input=>{const source=input&&typeof input==='object'?input:{},rawFriends=Array.isArray(source.friends)?source.friends:[],demoFriends=rawFriends.filter(isDemoFriend),removedIds=new Set(demoFriends.map(friend=>friend.id).filter(Boolean)),removedNames=new Set(demoFriends.map(friend=>friend.name).filter(Boolean)),friends=rawFriends.filter(friend=>!isDemoFriend(friend)),memories=(Array.isArray(source.memories)?source.memories:[]).filter(memory=>!removedIds.has(memory?.friendId)&&!(removedNames.has(memory?.friend)&&sameDemoMemory(memory))),giftRecords=(Array.isArray(source.giftRecords)?source.giftRecords:[]).filter(record=>!removedIds.has(record?.friendId)&&!(removedNames.has(record?.friend)&&sameDemoGift(record))),recentSignals=(Array.isArray(source.recentSignals)?source.recentSignals:[]).filter(signal=>signal&&typeof signal==='object'&&!removedIds.has(signal.friendId)&&['interest_preference','recent_need','dislike'].includes(signal.type)&&String(signal.content||'').trim()),rawProfile=sameDemoProfile(source.profile)?{}:(source.profile&&typeof source.profile==='object'?source.profile:{}),savedOnboarding=source.onboarding&&typeof source.onboarding==='object'?source.onboarding:{},onboarding={profileCompleted:savedOnboarding.profileCompleted===true,firstFriendCompleted:savedOnboarding.firstFriendCompleted===true},profile={...emptyProfile(),...rawProfile};return{profile,friends,memories,giftRecords,recentSignals,onboarding}};
+  const sanitizeUserData=input=>{const source=input&&typeof input==='object'?input:{},rawFriends=Array.isArray(source.friends)?source.friends:[],demoFriends=rawFriends.filter(isDemoFriend),removedIds=new Set(demoFriends.map(friend=>friend.id).filter(Boolean)),removedNames=new Set(demoFriends.map(friend=>friend.name).filter(Boolean)),friends=rawFriends.filter(friend=>!isDemoFriend(friend)),memories=(Array.isArray(source.memories)?source.memories:[]).filter(memory=>!removedIds.has(memory?.friendId)&&!(removedNames.has(memory?.friend)&&sameDemoMemory(memory))),giftRecords=(Array.isArray(source.giftRecords)?source.giftRecords:[]).filter(record=>!removedIds.has(record?.friendId)&&!(removedNames.has(record?.friend)&&sameDemoGift(record))),recentSignals=(Array.isArray(source.recentSignals)?source.recentSignals:[]).filter(signal=>signal&&typeof signal==='object'&&!removedIds.has(signal.friendId)&&['interest_preference','recent_need','dislike'].includes(signal.type)&&String(signal.content||'').trim()),rawProfile=sameDemoProfile(source.profile)?{}:(source.profile&&typeof source.profile==='object'?source.profile:{}),savedOnboarding=source.onboarding&&typeof source.onboarding==='object'?source.onboarding:{},onboarding={profileCompleted:savedOnboarding.profileCompleted===true,firstFriendCompleted:savedOnboarding.firstFriendCompleted===true,firstFriendGuideSeen:savedOnboarding.firstFriendGuideSeen===true},profile={...emptyProfile(),...rawProfile};return{profile,friends,memories,giftRecords,recentSignals,onboarding}};
   const readUserData=()=>{try{const stored=JSON.parse(localStorage.getItem('giftloop_user_data')||'null');if(stored&&typeof stored==='object'){const clean=sanitizeUserData(stored);if(JSON.stringify(clean)!==JSON.stringify({...emptyUserData(),...stored}))localStorage.setItem('giftloop_user_data',JSON.stringify(clean));return clean}const fresh=emptyUserData();localStorage.setItem('giftloop_user_data',JSON.stringify(fresh));return fresh}catch(error){const fresh=emptyUserData();localStorage.setItem('giftloop_user_data',JSON.stringify(fresh));return fresh}};
   let appMode=localStorage.getItem('giftloop_mode');if(!['demo','user'].includes(appMode))appMode='';
   const getCurrentData=mode=>mode==='demo'?{...cloneData(demoData),onboarding:{profileCompleted:true,firstFriendCompleted:true}}:mode==='user'?readUserData():emptyUserData();
@@ -807,7 +807,7 @@
   const serializableNotes=()=>((state.notes||[]).map(note=>{const copy={...note};if(String(copy.photo||'').startsWith('blob:'))copy.photo='';return copy}));
   const persistCurrentData=()=>{if(appMode!=='user')return;localStorage.setItem('giftloop_user_data',JSON.stringify({profile:persistedProfile(),friends:state.friends,memories:serializableNotes(),giftRecords:state.history||[],recentSignals:state.recentSignals||[],onboarding:state.onboarding||emptyUserData().onboarding}))};
   const saveFriends=()=>persistCurrentData();
-  window.giftLoopCurrentFriends=()=>state.friends;
+  window.giftLoopCurrentFriends=()=>state.friends;window.giftLoopAvatarMarkup=(friend,className)=>avatarMarkup(friend,className);
   state.giftReason='生日';state.mockSet=0;state.apiRecommendations=null;state.apiSummary='';state.resultBatches=[];state.resultAdjustment='';state.previousDirectionTitles=[];state.selectedDirectionIndex=-1;state.selectedProductIndex=-1;state.userProfile=normalizeProfile(activeData.profile);
   state.notes=cloneData(activeData.memories);
   if(appMode==='user'&&!state.notes.length){try{const legacy=JSON.parse(sessionStorage.getItem('giftloop-notes')||'[]');if(Array.isArray(legacy))state.notes=legacy.filter(note=>!sameDemoMemory(note)).map(note=>({...note,photo:String(note.photo||'').startsWith('blob:')?'':note.photo||''}))}catch(error){}}
@@ -818,7 +818,7 @@
   state.history=state.history.map(item=>({...item,friendId:item.friendId||getFriendByRef(item.friend)?.id||''}));
   const screens=[...document.querySelectorAll('.screen')];
   const current=()=>document.querySelector('.screen.active')?.dataset.screen;
-  function show(name,push=true){const old=current();if(old&&old!==name&&push)state.stack.push(old);screens.forEach(s=>s.classList.toggle('active',s.dataset.screen===name));document.querySelectorAll('[data-selected-name]').forEach(x=>x.textContent=state.selected?.name||'小林');renderAll();const target=document.querySelector(`.screen[data-screen="${name}"] .scroll`);if(old!==name&&target)target.scrollTop=0;if(window.scrollY)window.scrollTo(0,0);}
+  function show(name,push=true){const old=current();if(old==='friend-house'&&name!==old)firstFriendGuideVisible=false;if(old&&old!==name&&push)state.stack.push(old);screens.forEach(s=>s.classList.toggle('active',s.dataset.screen===name));document.querySelectorAll('[data-selected-name]').forEach(x=>x.textContent=state.selected?.name||'小林');renderAll();const target=document.querySelector(`.screen[data-screen="${name}"] .scroll`);if(old!==name&&target)target.scrollTop=0;if(window.scrollY)window.scrollTo(0,0);}
   function back(){show(state.stack.pop()||'pick-friend',false)}
   function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._id);t._id=setTimeout(()=>t.classList.remove('show'),1600)}
   function avatarMarkup(friend,className=''){
@@ -863,12 +863,13 @@
   const giftDirections=[{key:'ritual',category:'生日',title:'香氛与仪式小物',reason:'让房间多一点温柔气息',items:'香氛 · 鲜花 · 小首饰'},{key:'memory',category:'纪念日',title:'拍立得与影像记录',reason:'留住生活里的小瞬间',items:'相机 · 照片书 · 相框'},{key:'comfort',category:'日常',title:'柔软舒适的居家好物',reason:'把舒服和安心带回家',items:'毛毯 · 抱枕 · 居家服'},{key:'coffee',category:'毕业',title:'咖啡与日常器具',reason:'让喜欢慢慢变成日常',items:'杯具 · 咖啡豆 · 手冲工具'}];
   function renderPersonList(){
     const row=document.getElementById('personList'),strip=document.getElementById('giftProfileStrip'),setup=document.getElementById('giftSetup');
-    if(!row||!strip||!setup)return;
+    if(!row||!strip||!setup){window.giftLoopSyncPicker?.();return}
     if(state.selected&&!getFriendByRef(state.selected.id))state.selected=null;
     const visible=state.friends.filter(f=>!giftFriendQuery||(f.name+f.relationship+f.interests.join('')).toLowerCase().includes(giftFriendQuery));
     row.innerHTML=visible.map(f=>`<button class="gift-friend ${state.selected?.id===f.id?'selected':''}" data-pick-person="${f.id}" data-avatar-color="${escapeHtml(f.personalityColor)}" onclick="window.giftLoopChooseFriend('${f.id}')" style="--friend-tone:${f.personalityColor}">${avatarMarkup(f,'gift-avatar')}<b>${escapeHtml(f.name)}</b><small>${escapeHtml(f.relationship)}</small></button>`).join('')||'<div class="gift-recent-empty">还没有朋友，先去朋友页添加一位吧。</div>';
     const f=state.selected;
     setup.classList.toggle('open',!!f);
+    window.giftLoopSyncPicker?.();
     if(!f){strip.innerHTML='';return}
     const latestNote=state.notes.find(n=>recordBelongsToFriend(n,f)),recent=latestNote?.event||f.recentMemories?.[0]||'最近还没有新的记录';
     strip.innerHTML=`<b>${escapeHtml(f.name)} · ${escapeHtml(f.relationship)}</b><small>${escapeHtml(f.personality.join(' · '))}<br>${escapeHtml(f.interests.join(' / '))}</small><em>最近记得：「${escapeHtml(recent.replace(/^最近/,''))}」</em>`;
@@ -895,6 +896,8 @@
     root.innerHTML=`<section class="room-stage relationship-room-stage"><div class="room-window"><img src="${escapeHtml(windowImage)}" data-default-image-fallback="${defaultImageAssets.houseWindow}" alt="${escapeHtml(f.name)}的小屋窗景"><span class="room-window-label">${escapeHtml(f.name)} 的窗景</span><i class="room-curtain left" aria-hidden="true"></i><i class="room-curtain right" aria-hidden="true"></i></div><div class="room-sill relationship-sill"><div class="house-identity"><div><div class="sill-heading"><h1>${escapeHtml(f.name)}</h1><i class="personality-dot" style="background:${tone}" aria-label="性格色"></i></div><p class="sub">${escapeHtml(f.relationship||'好友')} · ${escapeHtml(mbtiMeta)}</p><div class="sill-tags">${identityTags.map(tag=>`<span class="tag">${escapeHtml(tag)}</span>`).join('')}</div></div></div><div class="house-quick-actions"><button class="house-primary-action" data-house-note="${f.id}"><span>＋</span><b>记一件事</b></button><button class="house-secondary-action" data-start-for="${f.id}"><span class="room-gift-icon" aria-hidden="true"></span><b>准备礼物</b></button></div></div></section><div class="room-wall relationship-wall"><section class="room-zone house-memory-zone"><div class="room-zone-head"><h3>关于 TA 的小事</h3><button type="button" data-house-all-memories="${f.id}">全部记录</button></div><div class="house-memory-list">${memoryMarkup}</div>${notes.length?'<p class="house-memory-clue">这些小事，也会成为下一次送礼的线索。</p>':''}</section><section class="room-zone"><div class="room-zone-head"><h3>重要日期</h3><button type="button" data-edit-house-dates>管理日期</button></div>${dateMarkup}</section><section class="room-zone house-gift-zone"><div class="room-zone-head"><h3>送过的心意</h3>${gifts.length>2?`<button type="button" data-house-all-gifts="${f.id}">查看全部</button>`:`<span>${gifts.length} 条</span>`}</div><div class="house-keepsake-list">${giftMarkup}</div></section></div>`;
   }
   renderHouse=renderRelationshipHouse;
+  const renderHouseWithoutFirstGuide=renderHouse;
+  renderHouse=function(){renderHouseWithoutFirstGuide();if(!firstFriendGuideVisible||appMode!=='user')return;const root=document.getElementById('friendHouse'),stage=root?.querySelector('.relationship-room-stage');if(!stage)return;const guide=document.createElement('section');guide.className='first-friend-guide';guide.innerHTML='<h3>第一位朋友已经住进来了</h3><p>记下关于 TA 的小事，以后准备礼物会更懂 TA。</p><div><button type="button" data-first-friend-action="memory">先记一件事</button><button type="button" data-first-friend-action="gift">直接准备礼物</button></div>';stage.insertAdjacentElement('afterend',guide)};
   function renderChoices(){
     const occasions=[['生日','08'],['毕业','△'],['纪念日','∞'],['感谢','♡'],['乔迁','⌂'],['节日','✦'],['无理由惊喜','!'],['其他','＋']],occasionRoot=document.getElementById('occasionGrid');
     if(occasionRoot)occasionRoot.innerHTML=occasions.map(([o,i])=>`<button class="choice ${state.occasion===o?'selected':''}" data-occasion="${o}"><span class="symbol">${i}</span><b>${o}</b></button>`).join('');
@@ -1119,7 +1122,7 @@
   }
   function loadVisibleImages(){document.querySelectorAll('.screen').forEach(screen=>{if(screen.classList.contains('active')){screen.querySelectorAll('img[data-deferred-src]').forEach(img=>{img.src=img.dataset.deferredSrc;delete img.dataset.deferredSrc})}else{screen.querySelectorAll('img[src]').forEach(img=>{img.dataset.deferredSrc=img.getAttribute('src');img.removeAttribute('src')})}})}
   function renderAll(){renderNav();renderHome();renderIsland();renderGiftLanding();renderInspirationFeed();renderInspirationDetail();renderPersonList();renderHouse();applyFriendHouseBackground();renderChoices();renderRecords();renderFriendForm();renderProfile();document.querySelectorAll('[data-current-mode-label]').forEach(x=>x.textContent=appMode==='user'?'我的念礼':'示例体验');loadVisibleImages()}
-  let firstFriendOnboarding=false;
+  let firstFriendOnboarding=false,firstFriendGuideVisible=false;
   function setFirstFriendOnboarding(active){firstFriendOnboarding=active===true;const screen=document.querySelector('[data-screen="add-friend"]'),skip=document.querySelector('[data-skip-first-friend]'),title=document.querySelector('[data-add-friend-title]'),backButton=document.querySelector('[data-screen="add-friend"] [data-back]');screen?.classList.toggle('first-friend-onboarding',firstFriendOnboarding);if(skip){skip.hidden=!firstFriendOnboarding;skip.textContent=firstFriendOnboarding?'稍后再说':'跳过'}if(title)title.textContent=firstFriendOnboarding?'添加第一个朋友':'认识一位新朋友';if(backButton)backButton.hidden=firstFriendOnboarding}
   function openFirstFriendStep(){resetFriendForm();setFirstFriendOnboarding(true);show('add-friend',false)}
   function resolveStartScreen(){if(!appMode)return'mode-welcome';if(appMode==='demo')return'pick-friend';if(!state.onboarding.profileCompleted)return'onboard';if(!state.onboarding.firstFriendCompleted)return'add-friend';return'pick-friend'}
@@ -1176,9 +1179,10 @@
   document.addEventListener('change',async e=>{if(e.target.id!=='friendHouseUpload'&&e.target.id!=='editFriendHouseUpload')return;const file=e.target.files?.[0];if(!file)return;try{const image=await readFriendImage(file);if(e.target.id==='friendHouseUpload'){friendDraft.avatarConfig.houseBackground=image;renderFriendForm()}else{editAvatarDraft.houseBackground=image;const block=document.querySelector('.edit-house-background');if(block)block.innerHTML=`<label>小屋背景 <small>可选</small></label><img src="${image}" alt="小屋背景预览"><div><label for="editFriendHouseUpload">更换</label><button type="button" data-remove-edit-house-background>删除</button></div><input id="editFriendHouseUpload" type="file" accept="image/*" hidden>`}}catch(error){console.warn('Friend image preview failed',error);toast('这张图片暂时无法读取')}});
   document.addEventListener('input',e=>{if(e.target.id==='onboardNickname'){const nickname=e.target.value;onboardingProfileDraft=normalizeProfile({...onboardingProfileDraft,name:nickname,nickname})}if(e.target.id==='newMbti'){friendDraft.mbti=e.target.value.trim().toUpperCase();friendDraft.personalityColor=colorForMbti(friendDraft.mbti);friendDraft.avatarConfig.personalityColor=friendDraft.personalityColor;const result=document.getElementById('newMbtiColorResult');if(result)result.innerHTML=`<i style="background:${friendDraft.personalityColor}"></i>${friendDraft.mbti?(personalityColorNames[friendDraft.personalityColor]+' · 由 MBTI 自动生成'):'未选择 MBTI · 使用中性色'}`;if(firstFriendOnboarding)renderFriendForm()}if(e.target.id==='editFriendMbti'){const color=colorForMbti(e.target.value),result=document.getElementById('editMbtiColorResult');if(result)result.innerHTML=`<i style="background:${color}"></i>${e.target.value?(personalityColorNames[color]+' · 由 MBTI 自动生成'):'暂不确定 · 使用中性色'}`;refreshEditAvatarTheme()}});
   document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='customFriendInterest'){e.preventDefault();document.querySelector('[data-add-custom-interest]')?.click()}});
-  document.getElementById('friendNext').onclick=()=>{captureFriendForm();if(!friendDraft.name){toast('先填写朋友昵称');return}const wasFirstFriend=firstFriendOnboarding;if(!wasFirstFriend&&friendStep<2){friendStep++;renderFriendForm();return}const f=normalizeFriend({...friendDraft,id:makeFriendId(),giftHistory:[]},state.friends.length);state.friends.push(f);state.onboarding.firstFriendCompleted=true;saveFriends();state.selected=f;const name=f.name;resetFriendForm();setFirstFriendOnboarding(false);renderAll();show('friend-house',false);toast(wasFirstFriend?name+' 已经住进来了':'为'+name+'建好小屋了')};
+  document.getElementById('friendNext').onclick=()=>{captureFriendForm();if(!friendDraft.name){toast('先填写朋友昵称');return}const wasFirstFriend=firstFriendOnboarding,isFirstSavedFriend=state.friends.length===0;if(!wasFirstFriend&&friendStep<2){friendStep++;renderFriendForm();return}const f=normalizeFriend({...friendDraft,id:makeFriendId(),giftHistory:[]},state.friends.length);state.friends.push(f);state.onboarding.firstFriendCompleted=true;if(isFirstSavedFriend&&appMode==='user'&&!state.onboarding.firstFriendGuideSeen){firstFriendGuideVisible=true;state.onboarding.firstFriendGuideSeen=true}saveFriends();state.selected=f;const name=f.name;resetFriendForm();setFirstFriendOnboarding(false);renderAll();show('friend-house',false);toast(wasFirstFriend?name+' 已经住进来了':'为'+name+'建好小屋了')};
   document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.closest('[data-edit-profile]')){e.preventDefault();show('profile-edit')}});
   document.addEventListener('click',e=>{if(e.target.closest('[data-start-gift-flow]'))window.giftLoopOpenFlow()});
+  document.addEventListener('click',e=>{const action=e.target.closest('[data-first-friend-action]')?.dataset.firstFriendAction;if(!action)return;e.preventDefault();e.stopImmediatePropagation();const friendId=state.selected?.id;firstFriendGuideVisible=false;renderHouse();if(action==='gift')window.giftLoopOpenFlow(friendId);else document.querySelector('#friendHouse [data-house-note]')?.click()});
   document.addEventListener('click',e=>{if(e.target.closest('[data-screen="gift-flow"].active [data-pick-person]'))show('occasion')});
   document.addEventListener('input',e=>{if(e.target.id==='friendSearch'){relationQuery=e.target.value.trim().toLowerCase();renderIsland()}if(e.target.id==='giftFriendSearch'){giftFriendQuery=e.target.value.trim().toLowerCase();renderPersonList()}});
   document.addEventListener('click',e=>{const toggle=e.target.closest('[data-relation-filter-toggle]'),menu=document.getElementById('relationFilterMenu');if(toggle){const open=!menu.classList.contains('show');menu.classList.toggle('show',open);menu.setAttribute('aria-hidden',String(!open));toggle.classList.toggle('active',open||relationFilter.startsWith('relationship:'));return}const filter=e.target.closest('[data-map-filter]');if(filter){relationFilter=filter.dataset.mapFilter;document.querySelectorAll('[data-map-filter]').forEach(x=>x.classList.toggle('active',x===filter));document.querySelector('[data-relation-filter-toggle]')?.classList.toggle('filtered',relationFilter.startsWith('relationship:'));menu?.classList.remove('show');menu?.setAttribute('aria-hidden','true');renderIsland();return}if(menu?.classList.contains('show')&&!e.target.closest('.relation-filter-menu')){menu.classList.remove('show');menu.setAttribute('aria-hidden','true')}});
@@ -1204,7 +1208,7 @@
     renderChoices();
     show('preferences');
   };
-  window.giftLoopChooseFriend=friendId=>{state.selected=getFriendByRef(friendId)||state.friends[0];show('occasion')};
+  window.giftLoopChooseFriend=friendId=>{const friend=getFriendByRef(friendId);if(!friend)return false;state.selected=friend;show('occasion');return true};
   window.giftLoopSetOccasion=value=>{state.occasion=value;state.giftReason=value;renderChoices();return true};
   window.giftLoopTogglePreference=(kind,value)=>{if(kind==='form'){state.selectedGiftTypes=state.selectedGiftTypes.includes(value)?state.selectedGiftTypes.filter(x=>x!==value):[...state.selectedGiftTypes,value];state.giftForms=[...state.selectedGiftTypes]}if(kind==='exclusion'){state.selectedAvoidances=state.selectedAvoidances.includes(value)?state.selectedAvoidances.filter(x=>x!==value):[...state.selectedAvoidances,value];state.giftExclusions=[...state.selectedAvoidances]}renderChoices();return true};
   window.giftLoopToggleAdvancedPreferences=()=>{advancedPreferencesOpen=!advancedPreferencesOpen;renderChoices();return advancedPreferencesOpen};
@@ -1391,38 +1395,7 @@
   .gl-friend-empty{display:none;padding:32px 10px;text-align:center;color:rgba(74,47,39,.58);font-size:12px}.gl-friend-empty.show{display:block}.gl-friend-empty button{display:block;margin:12px auto 0;border:0;background:transparent;color:#e4774f;font-weight:700;font-size:12px}
   .gl-prep-confirm{bottom:21px!important}
 </style>
-<script id="giftloop-prep-picker-script">
-(function(){
-  function clean(s){return (s||'').replace(/\s+/g,' ').trim()}
-  function readFriends(){return typeof window.giftLoopCurrentFriends==='function'?window.giftLoopCurrentFriends():[]}
-  function install(){
-    var title=[].slice.call(document.querySelectorAll('h1')).find(function(x){return clean(x.textContent)==='这份心意，想送给谁？'});if(!title)return;
-    var screen=title.closest('.screen')||title.parentElement.parentElement;if(screen.dataset.pickerReady==='1')return;screen.dataset.pickerReady='1';
-    var hero=title.parentElement,scene=hero.querySelector('.gl-gift-scene');
-    if(scene)scene.innerHTML='<i class="gl-scene-ribbon"></i><i class="gl-scene-flower"></i><i class="gl-scene-envelope"></i><i class="gl-scene-table"></i><i class="gl-scene-gift"></i><i class="gl-scene-bow"></i>';
-    var people=screen.querySelector('.personList,#personList');if(!people)return;
-    var buttons=[].slice.call(people.querySelectorAll(':scope > button'));
-    var data=readFriends(),byName={};data.forEach(function(f){byName[f.name]=f});
-    function nameOf(b){var first=b.querySelector('span,strong,div');return clean(first?first.childNodes[0].textContent:b.textContent)}
-    buttons.sort(function(a,b){var ai=!!(byName[nameOf(a)]||{}).isImportant,bi=!!(byName[nameOf(b)]||{}).isImportant;return Number(bi)-Number(ai)});
-    var important=buttons.filter(function(b){return !!(byName[nameOf(b)]||{}).isImportant});
-    var normal=buttons.filter(function(b){return important.indexOf(b)<0});
-    people.innerHTML='';
-    function heading(label){var d=document.createElement('div');d.className='gl-friend-group';d.textContent=label;people.appendChild(d)}
-    if(important.length){heading('重要的人');important.forEach(function(b){var n=b.querySelector('span,strong,div');if(n&&!b.querySelector('.gl-important-label')){var tag=document.createElement('em');tag.className='gl-important-label';tag.textContent='✦ 重要';n.appendChild(tag)}people.appendChild(b)});heading('其他朋友')}
-    normal.forEach(function(b){people.appendChild(b)});
-    var picker=document.createElement('div');picker.className='gl-friend-picker';
-    var search=document.createElement('label');search.className='gl-friend-search';search.innerHTML='<input type="search" placeholder="搜索朋友" aria-label="搜索朋友">';
-    var scroll=document.createElement('div');scroll.className='gl-friend-scroll';
-    var empty=document.createElement('div');empty.className='gl-friend-empty';empty.innerHTML='<span>没有找到这个朋友</span><button type="button">＋ 新增朋友</button>';
-    people.parentNode.insertBefore(picker,people);picker.appendChild(search);picker.appendChild(scroll);scroll.appendChild(people);scroll.appendChild(empty);
-    var input=search.querySelector('input');input.addEventListener('input',function(){var q=clean(input.value).toLowerCase(),shown=0;buttons.forEach(function(b){var ok=!q||clean(b.textContent).toLowerCase().indexOf(q)>-1;b.style.display=ok?'grid':'none';if(ok)shown++});people.querySelectorAll('.gl-friend-group').forEach(function(h){var next=h.nextElementSibling,any=false;while(next&&!next.classList.contains('gl-friend-group')){if(next.tagName==='BUTTON'&&next.style.display!=='none')any=true;next=next.nextElementSibling}h.style.display=any?'block':'none'});empty.classList.toggle('show',shown===0)});
-    empty.querySelector('button').addEventListener('click',function(){var candidates=[].slice.call(document.querySelectorAll('button'));var add=candidates.find(function(b){return clean(b.textContent).indexOf('新朋友')>-1&&b!==empty.querySelector('button')});if(add)add.click()});
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
-  new MutationObserver(install).observe(document.documentElement,{childList:true,subtree:true});
-})();
-</script>
+
 <style id="giftloop-prep-structural-ui">
   .gl2-prep{padding-bottom:108px!important;background:#fff9f2!important;overflow-x:hidden!important}
   .gl2-hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 124px;gap:24px;align-items:center;width:calc(100% - 40px);min-height:194px;margin:10px 20px 0;padding:22px 20px;box-sizing:border-box;overflow:hidden;border:1px solid rgba(228,119,79,.12);border-radius:27px;background:linear-gradient(140deg,#fffdf9 0%,#fbe7d7 64%,#f5dccb 100%);box-shadow:0 12px 30px rgba(82,53,39,.075)}
@@ -1460,87 +1433,50 @@
 </style>
 <script id="giftloop-prep-structural-script">
 (function(){
-  function norm(v){return (v||'').replace(/\s+/g,' ').trim()}
-  function stored(){return typeof window.giftLoopCurrentFriends==='function'?window.giftLoopCurrentFriends():[]}
   function boot(){
-    var oldIds=['giftloop-prep-rich-ui','giftloop-prep-focus-ui','giftloop-prep-picker-ui','giftloop-prep-dedupe-ui'];oldIds.forEach(function(id){var n=document.getElementById(id);if(n)n.remove()});
-    var h1=[].slice.call(document.querySelectorAll('h1')).find(function(el){return norm(el.textContent)==='这份心意，想送给谁？'});if(!h1)return;
-    var screen=h1.closest('.screen')||h1.parentElement.parentElement;if(screen.dataset.gl2Ready==='1')return;screen.dataset.gl2Ready='1';screen.classList.add('gl2-prep');
-    var oldHero=h1.parentElement;
-    var hero=document.createElement('section');hero.className='gl2-hero';hero.innerHTML='<div class="gl2-hero-copy"><div class="gl2-eyebrow">A GIFT WITH CARE</div><h1>这份心意，想送给谁？</h1><p class="gl2-hero-subtitle">先选一个重要的人，我们再一起想送什么。</p></div><div class="gl2-hero-illustration" aria-label="礼物盒、信封、花枝和丝带组成的送礼场景"><i class="gl2-ribbon"></i><i class="gl2-flower"></i><i class="gl2-envelope"></i><i class="gl2-table"></i><i class="gl2-gift"></i><i class="gl2-bow"></i></div>';
+    var screen=document.querySelector('[data-screen="gift-flow"]');
+    if(!screen||screen.dataset.gl2Ready==='1')return;
+    var oldHero=screen.querySelector('.gift-flow-head');
+    var legacyList=screen.querySelector('#personList');
+    if(!oldHero||!legacyList)return;
+    screen.dataset.gl2Ready='1';screen.classList.add('gl2-prep');
+    var hero=document.createElement('section');hero.className='gl2-hero';
+    hero.innerHTML='<div class="gl2-hero-copy"><div class="gl2-eyebrow">A GIFT WITH CARE</div><h1>这份心意，想送给谁？</h1><p class="gl2-hero-subtitle">先选一个重要的人，我们再一起想送什么。</p></div><div class="gl2-hero-illustration" aria-label="礼物盒、信封、花枝和丝带组成的送礼场景"><i class="gl2-ribbon"></i><i class="gl2-flower"></i><i class="gl2-envelope"></i><i class="gl2-table"></i><i class="gl2-gift"></i><i class="gl2-bow"></i></div>';
     oldHero.replaceWith(hero);
-    var legacyList=screen.querySelector('.personList,#personList');if(!legacyList)return;
-    var originalButtons=[].slice.call(legacyList.querySelectorAll(':scope > button'));
-    var friendData=stored(),map={};friendData.forEach(function(f){map[f.name]=f});
-    function buttonName(btn){var c=[].slice.call(btn.children).find(function(x){return norm(x.textContent)});return norm(c?c.textContent:btn.textContent).split(' ')[0]}
-    function relationship(btn){var kids=[].slice.call(btn.children).filter(function(x){return norm(x.textContent)});return norm(kids[1]?kids[1].textContent:'朋友')}
-    originalButtons.sort(function(a,b){return Number(!!(map[buttonName(b)]||{}).isImportant)-Number(!!(map[buttonName(a)]||{}).isImportant)});
-    var important=originalButtons.filter(function(b){return !!(map[buttonName(b)]||{}).isImportant}),normal=originalButtons.filter(function(b){return important.indexOf(b)<0});
-    var oldPicker=legacyList.closest('.gl-friend-picker')||legacyList;
-    var oldHeading=[].slice.call(screen.querySelectorAll('h2,h3')).find(function(el){return norm(el.textContent)==='选择一个人'||norm(el.textContent)==='最近想起的人'});
-    var oldOther=[].slice.call(screen.querySelectorAll('button')).find(function(el){return norm(el.textContent)==='全部朋友 →'||norm(el.textContent)==='其他朋友 →'});
-    var head=document.createElement('div');head.className='gl2-section-head';head.innerHTML='<h2>选择一个人</h2><button class="gl2-all-friends" type="button">全部朋友 →</button>';
+    var section=legacyList.closest('.gift-people-section');if(section)section.remove();
+    screen.querySelectorAll('.gift-upcoming-link,.gift-first-note,#giftProfileStrip,#giftSetup').forEach(function(el){el.remove()});
+    var head=document.createElement('div');head.className='gl2-section-head';head.innerHTML='<h2>选择一个人</h2>';
     var card=document.createElement('section');card.className='gl2-picker';card.innerHTML='<label class="gl2-search"><input type="search" placeholder="搜索朋友" aria-label="搜索朋友"></label><div class="gl2-scroll"></div>';
-    var scroll=card.querySelector('.gl2-scroll');
-    function group(label){var d=document.createElement('div');d.className='gl2-group-title';d.textContent=label;scroll.appendChild(d)}
-    function row(btn,index,isImportant){
-      var name=buttonName(btn),rel=relationship(btn),colors=[['#e4774f','#f9e3d8'],['#9eae8d','#eaf0e3'],['#dfb468','#f8eed8'],['#ad91be','#eee6f2']],pair=colors[index%colors.length];
-      const avatarHtml=btn.querySelector('.gl-avatar-image')?.outerHTML||'',avatarColor=btn.dataset.avatarColor||pair[0];btn.className='gl2-friend-row';btn.type='button';btn.removeAttribute('style');btn.removeAttribute('onclick');btn.style.setProperty('--tone',avatarColor);btn.style.setProperty('--soft',pair[1]);btn.innerHTML=avatarHtml+'<span class="gl2-person-copy"><span class="gl2-person-name">'+name+(isImportant?'<em class="gl2-important-tag">✦ 重要</em>':'')+'</span><span class="gl2-person-relation">'+rel+'</span></span><span class="gl2-check">✓</span>';scroll.appendChild(btn)
-    }
-    var idx=0;if(important.length){group('重要的人');important.forEach(function(b){row(b,idx++,true)});group('其他朋友')}normal.forEach(function(b){row(b,idx++,false)});
-    var empty=document.createElement('div');empty.className='gl2-empty';empty.innerHTML='没有找到这个朋友<button type="button">＋ 新增朋友</button>';scroll.appendChild(empty);
-    if(oldHeading&&oldHeading.parentElement&&oldHeading.parentElement!==screen){var possible=oldHeading.parentElement;if(possible.contains(legacyList))possible.remove()}else{if(oldHeading)oldHeading.remove();if(oldOther)oldOther.remove();oldPicker.remove()}
+    var scroll=card.querySelector('.gl2-scroll'),search=card.querySelector('input');
     hero.insertAdjacentElement('afterend',head);head.insertAdjacentElement('afterend',card);
     screen.querySelectorAll('.gl-important-visual,.gl-care-section,.gl-prep-tip-rich,.gl-prep-confirm').forEach(function(el){el.remove()});
     var confirm=document.createElement('button');confirm.type='button';confirm.className='gl2-confirm';confirm.textContent='选好了，继续 →';confirm.disabled=true;screen.appendChild(confirm);
-    screen.dataset.selectedFriendId='';
-    function setSelectedFriend(friendId){
-      if(!friendId)return;
-      screen.dataset.selectedFriendId=friendId;
-      scroll.querySelectorAll('.gl2-friend-row').forEach(function(x){
-        var isSelected=x.dataset.pickPerson===friendId;
-        x.classList.toggle('gl2-selected',isSelected);
-        x.setAttribute('aria-selected',isSelected?'true':'false');
-      });
-      confirm.disabled=false;
-    }
-    scroll.querySelectorAll('.gl2-friend-row').forEach(function(r){
-      var pointerStart=null;
-      r.addEventListener('pointerdown',function(e){pointerStart={x:e.clientX,y:e.clientY,id:e.pointerId}});
-      r.addEventListener('pointerup',function(e){
-        if(!pointerStart||pointerStart.id!==e.pointerId)return;
-        var distance=Math.hypot(e.clientX-pointerStart.x,e.clientY-pointerStart.y);pointerStart=null;
-        if(distance<=8)setSelectedFriend(r.dataset.pickPerson);
-      });
-      r.addEventListener('pointercancel',function(){pointerStart=null});
-      r.addEventListener('click',function(e){
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        setSelectedFriend(r.dataset.pickPerson);
-      });
-    });
-    confirm.addEventListener('click',function(e){
-      e.preventDefault();
-      var friendId=screen.dataset.selectedFriendId;
-      if(!friendId)return;
-      if(typeof window.giftLoopChooseFriend==='function')window.giftLoopChooseFriend(friendId);
-    });
-    card.querySelector('input').addEventListener('input',function(e){var q=norm(e.target.value).toLowerCase(),visible=0;scroll.querySelectorAll('.gl2-friend-row').forEach(function(r){var ok=!q||norm(r.textContent).toLowerCase().indexOf(q)>-1;r.style.display=ok?'flex':'none';if(ok)visible++});scroll.querySelectorAll('.gl2-group-title').forEach(function(g){var n=g.nextElementSibling,show=false;while(n&&!n.classList.contains('gl2-group-title')&&!n.classList.contains('gl2-empty')){if(n.classList.contains('gl2-friend-row')&&n.style.display!=='none')show=true;n=n.nextElementSibling}g.style.display=show?'block':'none'});empty.classList.toggle('is-visible',visible===0)});
-    empty.querySelector('button').addEventListener('click',function(){var add=[].slice.call(document.querySelectorAll('button')).find(function(b){return b!==empty.querySelector('button')&&norm(b.textContent).indexOf('新朋友')>-1});if(add)add.click()});
-    head.querySelector('button').addEventListener('click',function(e){
-      e.preventDefault();
-      var expanded=screen.classList.toggle('gl2-show-all');
-      var input=card.querySelector('input');
-      if(input){input.value='';input.dispatchEvent(new Event('input',{bubbles:true}))}
-      this.textContent=expanded?'收起朋友 ↑':'全部朋友 →';
-      if(expanded){
-        scroll.scrollTop=0;
-        requestAnimationFrame(function(){head.scrollIntoView({block:'start',behavior:'smooth'})});
+    var selectedId='';
+    function friends(){return typeof window.giftLoopCurrentFriends==='function'?window.giftLoopCurrentFriends():[]}
+    function filter(){var q=search.value.trim().toLowerCase(),visible=0;scroll.querySelectorAll('.gl2-friend-row').forEach(function(row){var match=!q||(row.dataset.search||'').includes(q);row.hidden=!match;if(match)visible++});scroll.querySelectorAll('.gl2-group-title').forEach(function(group){var next=group.nextElementSibling,shown=false;while(next&&!next.classList.contains('gl2-group-title')&&!next.classList.contains('gl2-empty')){if(next.classList.contains('gl2-friend-row')&&!next.hidden)shown=true;next=next.nextElementSibling}group.hidden=!shown});var empty=scroll.querySelector('.gl2-empty');if(empty)empty.classList.toggle('is-visible',visible===0)}
+    function render(){
+      var list=friends().slice().sort(function(a,b){return Number(b.isImportant===true)-Number(a.isImportant===true)});
+      if(!list.some(function(friend){return friend.id===selectedId}))selectedId='';
+      scroll.replaceChildren();
+      var important=list.filter(function(friend){return friend.isImportant===true}),normal=list.filter(function(friend){return friend.isImportant!==true});
+      function group(label){var title=document.createElement('div');title.className='gl2-group-title';title.textContent=label;scroll.appendChild(title)}
+      function add(friend){
+        var row=document.createElement('button');row.type='button';row.className='gl2-friend-row';row.dataset.friendId=friend.id;row.dataset.search=[friend.name,friend.relationship].join(' ').toLowerCase();row.style.setProperty('--tone',friend.personalityColor||'#E4774F');row.style.setProperty('--soft','color-mix(in srgb,'+(friend.personalityColor||'#E4774F')+' 13%,#fff)');
+        var avatar=document.createElement('span');avatar.className='gl2-avatar';avatar.innerHTML=typeof window.giftLoopAvatarMarkup==='function'?window.giftLoopAvatarMarkup(friend,'gift-avatar'):'';
+        var copy=document.createElement('span');copy.className='gl2-person-copy';var name=document.createElement('span');name.className='gl2-person-name';name.textContent=friend.name;if(friend.isImportant){var mark=document.createElement('em');mark.className='gl2-important-tag';mark.textContent='✦ 重要';name.appendChild(mark)}var relation=document.createElement('span');relation.className='gl2-person-relation';relation.textContent=friend.relationship||'朋友';copy.append(name,relation);
+        var check=document.createElement('span');check.className='gl2-check';check.textContent='✓';row.append(avatar,copy,check);row.classList.toggle('gl2-selected',friend.id===selectedId);row.setAttribute('aria-selected',friend.id===selectedId?'true':'false');scroll.appendChild(row)
       }
-    });
+      if(important.length){group('重要的人');important.forEach(add);if(normal.length)group('其他朋友')}
+      normal.forEach(add);
+      var empty=document.createElement('div');empty.className='gl2-empty';empty.innerHTML=list.length?'没有找到这个朋友':'还没有朋友，先添加一位吧';var addButton=document.createElement('button');addButton.type='button';addButton.dataset.addPickerFriend='';addButton.textContent='＋ 添加朋友';empty.appendChild(addButton);scroll.appendChild(empty);
+      confirm.disabled=!selectedId;filter();
+    }
+    scroll.addEventListener('click',function(event){var add=event.target.closest('[data-add-picker-friend]');if(add){event.stopImmediatePropagation();screen.querySelector('[data-go="add-friend"]')?.click();if(!screen.querySelector('[data-go="add-friend"]'))document.querySelector('[data-screen="island"] [data-go="add-friend"]')?.click();return}var row=event.target.closest('.gl2-friend-row');if(!row)return;event.preventDefault();event.stopImmediatePropagation();selectedId=row.dataset.friendId;scroll.querySelectorAll('.gl2-friend-row').forEach(function(item){var active=item.dataset.friendId===selectedId;item.classList.toggle('gl2-selected',active);item.setAttribute('aria-selected',String(active))});confirm.disabled=false});
+    search.addEventListener('input',filter);
+    confirm.addEventListener('click',function(event){event.preventDefault();if(selectedId&&typeof window.giftLoopChooseFriend==='function')window.giftLoopChooseFriend(selectedId)});
+    window.giftLoopSyncPicker=render;render();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
-  new MutationObserver(boot).observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>
 <style id="giftloop-prep-dedupe-ui">
@@ -1607,7 +1543,8 @@
 <script id="giftloop-prep-width-script">
 (function(){
   function arrange(){
-    var screen=document.querySelector('.gl2-prep'),hero=screen&&screen.querySelector('.gl2-hero'),head=screen&&screen.querySelector('.gl2-section-head'),picker=screen&&screen.querySelector('.gl2-picker');if(!screen||!hero||!head||!picker)return;
+    var screen=document.querySelector('.gl2-prep');if(screen?.querySelector('.gl2-friend-section'))return;
+    var hero=screen&&screen.querySelector('.gl2-hero'),head=screen&&screen.querySelector('.gl2-section-head'),picker=screen&&screen.querySelector('.gl2-picker');if(!screen||!hero||!head||!picker)return;
     var content=screen.querySelector(':scope > .gl2-content');
     if(!content){content=document.createElement('main');content.className='gl2-content';var navTitle=[].slice.call(screen.querySelectorAll('h2')).find(function(h){return h.textContent.trim()==='准备心意'});var nav=navTitle&&navTitle.parentElement;if(nav&&nav.parentElement===screen)nav.insertAdjacentElement('afterend',content);else screen.insertBefore(content,screen.firstChild)}
     [hero,head,picker].forEach(function(el){if(el.parentElement!==content)content.appendChild(el)});
@@ -1676,6 +1613,7 @@
 (function(){
   function fixBottom(){
     var screen=document.querySelector('.gl2-prep'),content=screen&&screen.querySelector('.gl2-content'),picker=screen&&screen.querySelector('.gl2-picker'),confirm=screen&&screen.querySelector('.gl2-confirm');if(!screen||!content||!picker||!confirm)return;
+    if(content.querySelector('.gl2-friend-section'))return;
     var action=screen.querySelector(':scope > .gl2-bottom-action');if(!action){action=document.createElement('div');action.className='gl2-bottom-action';screen.appendChild(action)}
     if(confirm.parentElement!==action)action.appendChild(confirm);
     var next=picker.nextElementSibling;while(next){var candidate=next;next=next.nextElementSibling;candidate.remove()}
@@ -1807,6 +1745,7 @@
   .gl2-prep>.gl2-bottom-action{position:fixed!important;left:0!important;right:0!important;bottom:0!important;width:auto!important;z-index:45!important;padding:10px 20px calc(12px + env(safe-area-inset-bottom,0px))!important;background:linear-gradient(180deg,rgba(255,249,242,0),#fff9f2 30%)!important;box-sizing:border-box!important;pointer-events:none!important}
   .gl2-prep .gl2-confirm.btn.full{position:relative!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;display:flex!important;width:100%!important;max-width:100%!important;height:52px!important;margin:0!important;padding:0 20px!important;box-sizing:border-box!important;border-radius:16px!important;font-size:inherit!important;font-weight:800!important;pointer-events:none!important}.gl2-prep.active .gl2-confirm.btn.full{pointer-events:auto!important}
   .gl2-prep .gl2-bottom-action .gl2-confirm:not(:disabled){background:#E4774F!important;color:#fff!important}
+  @media(max-height:700px){.gl2-prep .gl2-hero{height:145px!important;min-height:145px!important;flex-basis:145px!important}.gl2-prep .gl2-friend-section{margin-top:12px!important}.gl2-prep>.gl2-content.scroll.with-header{padding-bottom:76px!important}}
 </style>
 <script id="giftloop-prep-native-layout-script">
 (function(){
@@ -2320,6 +2259,13 @@ document.addEventListener('click',event=>{
 .memory-ai-understanding{margin-top:9px;padding:7px 10px;border-radius:11px;background:#FFF1E7;color:#A85F46;font-size:11px;line-height:1.5}
 .memory-ai-understanding b{color:#8F503B;font-weight:700}
 .memory-ai-understanding.is-loading{background:#FAF3EC;color:#A18477}
+</style>
+<style id="nianli-first-flow-polish">
+.gl2-scroll{touch-action:pan-y}.gl2-friend-row[hidden],.gl2-group-title[hidden]{display:none!important}
+.onboard-intro{height:158px;padding:17px 18px}.onboard-intro>img{inset:0;width:100%;height:100%;object-fit:cover;object-position:68% 56%;border-radius:0;filter:saturate(.88);opacity:.94}.onboard-intro:after{background:linear-gradient(90deg,#fff9f2 0%,rgba(255,249,242,.97) 33%,rgba(255,249,242,.78) 49%,rgba(255,249,242,.18) 73%,transparent 90%)}.onboard-copy{width:58%}.onboard-copy .display{font-size:20px;line-height:1.22}.onboard-copy .sub{margin-top:7px;line-height:1.45}
+.relationship-sill .house-secondary-action{background:#FFF7F0;color:#704537;border-color:rgba(185,93,60,.25);font-weight:700}.relationship-sill .house-secondary-action .room-gift-icon{border-color:#C96542;opacity:1}.relationship-sill .house-secondary-action .room-gift-icon:before{border-color:#C96542}.relationship-sill .house-secondary-action .room-gift-icon:after{background:#C96542}.relationship-sill .house-identity .sub{line-height:1.45}.relationship-sill .sill-tags{gap:5px}.house-memory-empty,.house-section-empty{padding:13px 15px}
+.first-friend-guide{margin:13px 5px 0;padding:16px;border:1px solid rgba(228,119,79,.12);border-radius:20px;background:#FFF8F1;box-shadow:0 7px 20px rgba(92,56,39,.04)}.first-friend-guide h3{margin:0;color:#4A2F27;font-size:15px}.first-friend-guide p{margin:6px 0 13px;color:rgba(74,47,39,.62);font-size:11px;line-height:1.55}.first-friend-guide>div{display:flex;gap:8px}.first-friend-guide button{flex:1;min-height:39px;border:1px solid rgba(228,119,79,.25);border-radius:13px;background:#FFF;color:#B65D3E;font-size:11px;font-weight:700}.first-friend-guide button:first-child{border-color:#E4774F;background:#E4774F;color:#FFF}
+@media(max-width:380px){.onboard-intro{height:138px}.onboard-copy .display{font-size:18px}.first-friend-guide>div{flex-wrap:wrap}}
 </style>
 <style id="giftloop-mobile-viewport">
 @media (max-width: 767px) {
