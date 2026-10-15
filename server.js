@@ -195,10 +195,10 @@ app.post('/api/gift-recommend', async (req, res) => {
       "directionType": "具体方向类型，例如兴趣延伸、情感纪念、共同体验",
       "imageKey": "home|drink|memory|plant|fashion|tech|art|sport|hobby|experience 之一",
       "reason": "一句话核心理由，控制在55个中文字符以内",
-      "details": ["结合朋友具体资料的理由1", "理由2", "理由3"],
+      "details": ["结合朋友具体资料的简短理由"],
       "evidence": [{"source":"profile|memory|history|request", "reference":"请求里实际出现的原文片段", "text":"这条资料如何影响推荐"}],
-      "selectionTips": ["具体、可执行的挑选建议1", "建议2"],
-      "products": [{"name":"具体商品类型或规格建议", "price":"参考价格区间", "reason":"为什么符合本次条件", "features":["核心特点","适用条件"], "verified":false}],
+      "selectionTips": ["具体、可执行的挑选建议"],
+      "products": [{"name":"具体商品类型或规格建议", "price":"参考价格区间", "reason":"为什么符合本次条件", "features":["核心特点"], "verified":false}],
       "budget": "价格区间",
       "tags": ["标签1", "标签2", "标签3"]
     }
@@ -253,7 +253,7 @@ Recent Signals：${formatRecentSignals(userPayload.friend.recentSignals)}
 其他硬性禁忌：${userPayload.constraints.freeText || '无'}
 补充：${userPayload.extraNote || '无'}
 
-必须先淘汰违反预算上限、明确排除、长期避雷、Recent Signals 中 dislike、过敏禁忌或历史重复的候选；再按送礼期待和礼物类型偏好排序。Recent Signals 是从近期日常记录中提取的明确线索，应与长期资料和本次要求共同使用；相关时可以自然引用，但不要让全部推荐机械围绕同一条线索。推荐理由必须明确关联以上资料中的具体信息。evidence.reference 必须逐字摘自上面真实提供的资料或本次要求，不得编造；Recent Signals 的依据来源使用 memory；没有可靠依据时 evidence 返回空数组。每个方向给出 2–3 个不带虚构品牌的具体商品类型/规格参考及 2–4 条实用挑选建议。请返回 3 个彼此明显不同的方向，而不是同类商品的简单替换，并严格使用 system prompt 指定的 JSON 结构。`;
+必须先淘汰违反预算上下限、明确排除、长期避雷、Recent Signals 中 dislike、过敏禁忌或历史重复的候选；所有 budget 和参考价格都要落在给定预算范围内。再按送礼期待和礼物类型偏好排序。Recent Signals 是从近期日常记录中提取的明确线索，应与长期资料和本次要求共同使用；相关时可以自然引用，但不要让全部推荐机械围绕同一条线索。推荐理由必须明确关联以上资料中的具体信息。evidence.reference 必须逐字摘自上面真实提供的资料或本次要求，不得编造；Recent Signals 的依据来源使用 memory；没有可靠依据时 evidence 返回空数组。每个方向只给出 1 个不带虚构品牌的具体商品类型/规格参考和 1–2 条实用挑选建议，避免冗余输出。按顺序返回 3 个明显不同的方向：实用但特别、纪念意义、体验或兴趣延伸。不要用两个相似的体验方向凑数，严格使用 system prompt 指定的 JSON 结构。`;
 
   if (process.env.NODE_ENV !== 'production') {
     console.info('Gift recommendation request', {
@@ -277,6 +277,11 @@ Recent Signals：${formatRecentSignals(userPayload.friend.recentSignals)}
     });
 
     if (!isValidRecommendationResult(result)) {
+      console.error('Gift recommendation schema mismatch', {
+        summaryType: typeof result?.summary,
+        recommendationCount: Array.isArray(result?.recommendations) ? result.recommendations.length : null,
+        itemFields: Array.isArray(result?.recommendations) ? result.recommendations.map(item => ({ title: typeof item?.title, category: typeof item?.category, reason: typeof item?.reason, budget: typeof item?.budget, tags: Array.isArray(item?.tags) })) : []
+      });
       throw new Error('Model returned an unexpected JSON structure');
     }
 
@@ -438,35 +443,58 @@ async function requestDashScopeJson({ apiKey, baseUrl, model, systemPrompt, user
   const endpoint = `${String(baseUrl).replace(/\/$/, '')}/chat/completions`;
   const providerController = new AbortController();
   const providerTimeout = setTimeout(() => providerController.abort(), timeoutMs);
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    signal: providerController.signal,
-    body: JSON.stringify({
-      model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
-      ],
-      temperature,
-      response_format: { type: 'json_object' }
-    })
-  }).finally(() => clearTimeout(providerTimeout));
-
-  if (!response.ok) {
-    const providerRequestId = response.headers.get('x-request-id');
-    console.error('DashScope request failed', {
-      status: response.status,
-      requestId: providerRequestId || undefined
+  const startedAt = Date.now();
+  let headersAt = 0;
+  let phase = 'response-headers';
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      signal: providerController.signal,
+      body: JSON.stringify({
+        model,
+        ...(model === 'qwen3.8-flash' ? { enable_thinking: false } : {}),
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature,
+        response_format: { type: 'json_object' }
+      })
     });
-    throw new Error(`DashScope request failed with status ${response.status}`);
+    headersAt = Date.now();
+    phase = 'response-body';
+    if (!response.ok) {
+      console.error('DashScope request failed', {
+        status: response.status,
+        requestId: response.headers.get('x-request-id') || undefined,
+        elapsedMs: Date.now() - startedAt
+      });
+      throw new Error(`DashScope request failed with status ${response.status}`);
+    }
+    const completion = await response.json();
+    const bodyAt = Date.now();
+    phase = 'parse-model';
+    const result = parseModelJson(completion?.choices?.[0]?.message?.content);
+    console.info('DashScope request completed', {
+      model,
+      headersMs: headersAt - startedAt,
+      bodyMs: bodyAt - headersAt,
+      elapsedMs: Date.now() - startedAt,
+      outputTokens: completion?.usage?.completion_tokens
+    });
+    return result;
+  } catch (error) {
+    if (error?.name === 'AbortError') {
+      console.error('DashScope request timed out', { phase, elapsedMs: Date.now() - startedAt });
+    }
+    throw error;
+  } finally {
+    clearTimeout(providerTimeout);
   }
-
-  const completion = await response.json();
-  return parseModelJson(completion?.choices?.[0]?.message?.content);
 }
 
 function normalizeRecentSignals(value) {

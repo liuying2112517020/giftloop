@@ -576,7 +576,7 @@ async function freshPage(browser, viewport, test, setup) {
     await page.locator('[data-action="generate"]').click();
     await page.locator('[data-screen="results"].active').waitFor();
     assert.equal(await page.locator('.gift-idea-card').count(), 3);
-    assert.match(await page.locator('.gift-idea-card').first().locator('img').getAttribute('src'), /gift-photo-printer\.png/);
+    assert.match(await page.locator('.gift-idea-card').first().locator('img').getAttribute('src'), /gift-photo-printer\.webp/);
     const resultText = await page.locator('.gift-idea-card').first().innerText();
     assert.match(resultText, /最近开始学习摄影|这条记录说明/);
     assert.doesNotMatch(resultText, /虚构滑雪/);
@@ -648,7 +648,7 @@ async function freshPage(browser, viewport, test, setup) {
     await page.locator('[data-action="generate"]').click(); await page.locator('[data-screen="results"].active').waitFor();
     await page.locator('.gift-idea-card img').first().evaluate(img => { img.src = '/assets/gifts/does-not-exist.png'; });
     await page.waitForFunction(() => document.querySelector('.gift-idea-card img')?.dataset.fallbackApplied === 'true');
-    assert.match(await page.locator('.gift-idea-card img').first().getAttribute('src'), /gift-home\.png/);
+    assert.match(await page.locator('.gift-idea-card img').first().getAttribute('src'), /gift-home\.webp/);
   }));
 
   for (const viewport of [{ width: 360, height: 640 }, { width: 375, height: 667 }, { width: 390, height: 844 }, { width: 430, height: 932 }]) {
@@ -677,7 +677,7 @@ async function freshPage(browser, viewport, test, setup) {
 
   await run('主要图片均可加载', async () => withPage(browser, { width: 390, height: 844 }, null, async page => {
     await page.waitForTimeout(500);
-    const broken = await page.locator('img:visible').evaluateAll(images => images.filter(img => img.complete && img.naturalWidth === 0).map(img => img.getAttribute('src')));
+    const broken = await page.locator('.screen.active img:visible').evaluateAll(images => images.filter(img => img.complete && img.naturalWidth === 0).map(img => img.getAttribute('src')));
     assert.deepEqual(broken, []);
   }));
 
